@@ -16,7 +16,22 @@ HFONT* fonts=NULL;
 TEXTMETRIC* fontsMetrics=NULL;
 int fontsArraySize=0;
 int fontsArrayCounter=0;
+TOCURSORPOS cursorPosition={0,0};
 
+TOCURSORPOS* GetCursorPosition()
+{
+	return &cursorPosition;
+}
+
+void SetCursorPositionByTap(int x, int y)
+{
+	
+}
+
+void SetCursorPositionByShift(int shift)
+{
+	
+}
 
 HFONT* GetFonts(int *ArrayCounter)
 {

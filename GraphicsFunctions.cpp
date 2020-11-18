@@ -2,6 +2,21 @@
 #include "GraphicsFunctions.h"
 #include "TextOperations.h"
 
+bool cursorHighLighted=false;
+
+
+GFDRAWEDLINES drawedLines = {0,0,0};
+
+void DrawCursor(HDC hdc)
+{
+	
+}
+
+GFDRAWEDLINES* GetDrawedLines()
+{
+	return &drawedLines;
+}
+
 void DrawTextByLineChoosenHDC(SEGMENT* segments, int segmentsCount, int a, int b , int reserverd, int pageSize, HDC hdc, RECT rect)
 {
 	int currentLine=0;
@@ -26,7 +41,7 @@ void DrawTextByLineChoosenHDC(SEGMENT* segments, int segmentsCount, int a, int b
 	//int lastCursorOnText=0;
 	
 	//SIZE textSize;
-
+	
 	int scrolledLines=a-b;
 	int rectTop=rect.top;
 	int counter=0;
@@ -34,7 +49,12 @@ void DrawTextByLineChoosenHDC(SEGMENT* segments, int segmentsCount, int a, int b
 	HFONT* fonts=GetFonts(&arraySize);
 	SelectObject(hdc, fonts[0]);
 	
-	if (abs(a-b)<pageSize)
+	drawedLines.segment = segmentPointer;
+	drawedLines.lineBegin = inSegmentLine;
+	drawedLines.lineCount = 0;
+				
+				
+	if (abs(scrolledLines)<pageSize)
 	{	
 		
 		if (scrolledLines>0) //GoDown - render bottom strings
@@ -54,6 +74,8 @@ void DrawTextByLineChoosenHDC(SEGMENT* segments, int segmentsCount, int a, int b
 				}
 			}
 			
+			drawedLines.lineCount = scrolledLines;
+
 			while (scrolledLines>0)
 			{
 				rectTop-=FONTHEIGHT;
@@ -67,6 +89,7 @@ void DrawTextByLineChoosenHDC(SEGMENT* segments, int segmentsCount, int a, int b
 					
 				}
 			}
+		
 			lastHeight=rectTop;
 			fillingRect.top=lastHeight;
 			fillingRect.bottom=fillingRect.top+FONTHEIGHT;
@@ -83,10 +106,9 @@ void DrawTextByLineChoosenHDC(SEGMENT* segments, int segmentsCount, int a, int b
 					if (inSegmentLine>=segments[segmentPointer].linesCounter)
 					{
 						inSegmentLine=0;
-						segmentPointer++;
+						
 					}
-					
-					
+					drawedLines.lineCount++;
 				}
 				else
 					ExtTextOut(hdc,3,lastHeight,ETO_OPAQUE,&fillingRect,L" ",1,NULL);

@@ -6,6 +6,11 @@
 //#include "DemoText.h"
 #include "textData.h"
 
+typedef struct
+{ 
+	int segment;
+	int position;
+}TOCURSORPOS;
 
 void GetTextSegments(HWND hWnd, SEGMENT* segments,int* segmentsCount);
 void RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect);
