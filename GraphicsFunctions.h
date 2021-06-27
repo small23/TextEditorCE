@@ -16,3 +16,5 @@ typedef struct
 
 void DrawTextByLine(SEGMENT* segments,int segmentCount, int a, int b , int c, HWND hWnd, RECT rect);
 void DrawTextByLineChoosenHDC(SEGMENT* segments,int segmentCount, int newLinePointer, int oldLinePointer , int redrawAll, int pageSize, HDC hdc, RECT rect);
+void DrawCursor(HDC hdc);
+GFDRAWEDLINES* GetDrawedLines();

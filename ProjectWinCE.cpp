@@ -120,7 +120,7 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 				InsertSymbol(segments,0,9,charCode,hdc, rect);
 				break;
 			default:
-				InsertSymbol(segments,0,carrage,charCode,hdc, rect);
+				InsertSymbol(segments,0,carrage,L'L',hdc, rect);
 				carrage++;
 				break;
 			}

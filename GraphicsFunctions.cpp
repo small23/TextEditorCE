@@ -72,9 +72,10 @@ void DrawTextByLineChoosenHDC(SEGMENT* segments, int segmentsCount, int a, int b
 					inSegmentLine=0;
 					segmentPointer++;
 				}
+				drawedLines.lineCount++;
 			}
 			
-			drawedLines.lineCount = scrolledLines;
+			
 
 			while (scrolledLines>0)
 			{
@@ -190,6 +191,10 @@ void DrawTextByLine(SEGMENT* segments, int segmentsCount, int a, int b , int c, 
 		}
 	}
 	
+	drawedLines.segment = segmentPointer;
+	drawedLines.lineBegin = inSegmentLine;
+	drawedLines.lineCount = 0;
+
 	hdc = BeginPaint (hWnd, &ps); 
 	
 	int arraySize=0;
