@@ -22,7 +22,7 @@ void DrawTextByLineChoosenHDC(SEGMENT* segments, int segmentsCount, int a, int b
 	int currentLine=0;
 	int inSegmentLine=0;
 	int segmentPointer=0;
-	
+
 	while (currentLine<a)
 	{
 		inSegmentLine++;

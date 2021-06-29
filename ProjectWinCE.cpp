@@ -78,9 +78,42 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
     // Standard show and update calls
     ShowWindow (hWnd, nCmdShow);
     UpdateWindow (hWnd);
-	
-	if (hwndCB)
-		CommandBar_Show(hwndCB, TRUE);
+	  
+	TBBUTTON tbButtons[] = 
+	{
+  		{ 0, ID_FILE_NEW,  TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0},
+  		{ 1, ID_FILE_OPEN, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0},
+  		{ 2, ID_FILE_SAVE, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0},
+  		{ 0, 0, TBSTATE_ENABLED, TBSTYLE_SEP, 0L, 0},
+  		{ 3, ID_EDIT_CUT,   TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0},
+  		{ 4, ID_EDIT_COPY,  TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0},
+  		{ 5, ID_EDIT_PASTE, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0},
+  		{ 0, 0, TBSTATE_ENABLED, TBSTYLE_SEP, 0L, 0},
+  		{ 6, ID_FILE_PRINT, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0},
+  		{ 0, 0, TBSTATE_ENABLED, TBSTYLE_SEP, 0L, 0},
+  		{ 7, ID_HELP_ABOUT, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0}
+	};
+
+
+	TBADDBITMAP tbab;
+	HWND hwndTb = CreateToolbarEx(hWnd,
+    	WS_CHILD | WS_BORDER | WS_VISIBLE | TBSTYLE_TOOLTIPS |      
+     	 CCS_ADJUSTABLE,
+    	IDR_TOOLBAR1,      
+    	8, 
+    	hInst,
+    	IDB_BITMAP1, 
+    	(LPCTBBUTTON)&tbButtons, 
+    	11,                  
+    	16, 16,              
+    	16, 16,              
+    	sizeof(TBBUTTON));   
+	if(hwndTb == NULL)
+  		return FALSE;
+
+
+	//if (hwndCB)
+		//CommandBar_Show(hwndCB, TRUE);
 
     // Application message loop
     while (GetMessage (&msg, NULL, 0, 0)) {
@@ -184,11 +217,11 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 		}
 	case WM_CREATE:
 		{
-			hwndCB = CommandBar_Create(hInst, hWnd, 1);			
-			BOOL success=CommandBar_InsertMenubar(hwndCB, hInst, IDR_MENU1 , 0);
-			CommandBar_InsertComboBox(hwndCB, hInst, 100, CBS_DROPDOWNLIST | WS_VSCROLL, 0, 1);
+			//hwndCB = CommandBar_Create(hInst, hWnd, 1);			
+			//BOOL success=CommandBar_InsertMenubar(hwndCB, hInst, IDR_MENU1 , 0);
+			//CommandBar_InsertComboBox(hwndCB, hInst, 100, CBS_DROPDOWNLIST | WS_VSCROLL, 0, 1);
 			
-			success=CommandBar_AddAdornments(hwndCB, 0, 0);
+			//success=CommandBar_AddAdornments(hwndCB, 0, 0);
 
 			return 0;
 		}

@@ -6,6 +6,7 @@
 #define IDD_DIALOG1                     102
 #define IDR_TOOLBAR1                    103
 #define IDI_ICON1                       107
+#define IDB_BITMAP1                     115
 #define ID_FILE_NEW                     40001
 #define ID_FILE_OPEN                    40002
 #define t                               40003
@@ -25,7 +26,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        109
+#define _APS_NEXT_RESOURCE_VALUE        116
 #define _APS_NEXT_COMMAND_VALUE         40015
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101
