@@ -1,8 +1,0 @@
-#pragma once
-
-#define SCROLLBARID 100
-#define STRINGLENGTH 92
-#define TOPHEADERDEADZONE 24
-#define SBWIDTH 15
-#define SYMBOLS_ARRAY_STEP_SIZE 256
-#define FONTHEIGHT 16
