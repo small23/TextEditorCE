@@ -23,7 +23,7 @@ LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Menu
+// Menubar
 //
 
 IDR_MENU1 MENU DISCARDABLE 
@@ -107,7 +107,7 @@ IDB_CMDBAND             BITMAP  DISCARDABLE     "CommandBandImg.bmp"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON    DISCARDABLE     "CmdBand.ico"
+IDI_ICON1               ICON    DISCARDABLE     "FileView.ico"
 #endif    // Russian resources
 /////////////////////////////////////////////////////////////////////////////
 
