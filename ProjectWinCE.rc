@@ -93,24 +93,12 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Toolbar
-//
-
-IDR_TOOLBAR1 TOOLBAR DISCARDABLE  16, 16
-BEGIN
-    BUTTON      ID_BUTTON40009
-    SEPARATOR
-    BUTTON      ID_BUTTON40012
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Bitmap
 //
 
-IDR_TOOLBAR1            BITMAP  DISCARDABLE     "toolbar1.bmp"
-IDB_BITMAP1             BITMAP  DISCARDABLE     "BITMAPTOOLS.bmp"
+IDB_CMDBAR              BITMAP  DISCARDABLE     "CommandBarImg.bmp"
+IDB_CMDEDIT             BITMAP  DISCARDABLE     "CommandEditImg.bmp"
+IDB_CMDBAND             BITMAP  DISCARDABLE     "CommandBandImg.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

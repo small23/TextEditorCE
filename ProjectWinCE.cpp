@@ -2,19 +2,22 @@
 //
 #include "stdafx.h"
 #include "ProjectWinCE.h"
+#include <commctrl.h>                // Command bar includes
 
 int carrage=0;
 
 //======================================================================
 // Program entry point
 //
+
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPWSTR lpCmdLine, int nCmdShow) {
     WNDCLASS wc;
     HWND hWnd;
     MSG msg;
 	HICON hIcon;
-	
+	INITCOMMONCONTROLSEX icex;
+
 	hIcon=LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
 
 	hInst = hInstance;
@@ -32,6 +35,10 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	
     if (RegisterClass (&wc) == 0) return -1;
 	
+	icex.dwSize = sizeof (INITCOMMONCONTROLSEX);
+    icex.dwICC = ICC_COOL_CLASSES;
+    InitCommonControlsEx (&icex);
+
     // Create main window.
     hWnd = CreateWindowEx(WS_EX_NODRAG,       // Ex style flags
 		TEXT("MyClass"),    // Window class
@@ -79,41 +86,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
     ShowWindow (hWnd, nCmdShow);
     UpdateWindow (hWnd);
 	  
-	TBBUTTON tbButtons[] = 
-	{
-  		{ 0, ID_FILE_NEW,  TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0},
-  		{ 1, ID_FILE_OPEN, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0},
-  		{ 2, ID_FILE_SAVE, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0},
-  		{ 0, 0, TBSTATE_ENABLED, TBSTYLE_SEP, 0L, 0},
-  		{ 3, ID_EDIT_CUT,   TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0},
-  		{ 4, ID_EDIT_COPY,  TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0},
-  		{ 5, ID_EDIT_PASTE, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0},
-  		{ 0, 0, TBSTATE_ENABLED, TBSTYLE_SEP, 0L, 0},
-  		{ 6, ID_FILE_PRINT, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0},
-  		{ 0, 0, TBSTATE_ENABLED, TBSTYLE_SEP, 0L, 0},
-  		{ 7, ID_HELP_ABOUT, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0L, 0}
-	};
-
-
-	TBADDBITMAP tbab;
-	HWND hwndTb = CreateToolbarEx(hWnd,
-    	WS_CHILD | WS_BORDER | WS_VISIBLE | TBSTYLE_TOOLTIPS |      
-     	 CCS_ADJUSTABLE,
-    	IDR_TOOLBAR1,      
-    	8, 
-    	hInst,
-    	IDB_BITMAP1, 
-    	(LPCTBBUTTON)&tbButtons, 
-    	11,                  
-    	16, 16,              
-    	16, 16,              
-    	sizeof(TBBUTTON));   
-	if(hwndTb == NULL)
-  		return FALSE;
-
-
-	//if (hwndCB)
-		//CommandBar_Show(hwndCB, TRUE);
+	if (hwndCB)
+		CommandBar_Show(hwndCB, TRUE);
 
     // Application message loop
     while (GetMessage (&msg, NULL, 0, 0)) {
@@ -153,7 +127,7 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 				InsertSymbol(segments,0,9,charCode,hdc, rect);
 				break;
 			default:
-				InsertSymbol(segments,0,carrage,L'L',hdc, rect);
+				InsertSymbol(segments,0,carrage,charCode,hdc, rect);
 				carrage++;
 				break;
 			}
@@ -217,11 +191,7 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 		}
 	case WM_CREATE:
 		{
-			//hwndCB = CommandBar_Create(hInst, hWnd, 1);			
-			//BOOL success=CommandBar_InsertMenubar(hwndCB, hInst, IDR_MENU1 , 0);
-			//CommandBar_InsertComboBox(hwndCB, hInst, 100, CBS_DROPDOWNLIST | WS_VSCROLL, 0, 1);
-			
-			//success=CommandBar_AddAdornments(hwndCB, 0, 0);
+			CreateCommandBand (hWnd, TRUE);
 
 			return 0;
 		}
@@ -417,3 +387,128 @@ int GetFileName (HWND hWnd, LPTSTR szFileName, int nMax)
 		return 0;
 }
 
+
+// Command band button initialization structure
+const TBBUTTON tbCBStdBtns[] = {
+//  BitmapIndex      Command  State            Style    UserData  String
+    {STD_FILEOPEN,   211,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+    {STD_FILESAVE,   212,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+    {0,              0,       TBSTATE_ENABLED, TBSTYLE_SEP,    0,    0},
+    {STD_CUT,        213,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+    {STD_COPY,       214,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+    {STD_PASTE,      215,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+    {0,              0,       TBSTATE_ENABLED, TBSTYLE_SEP,    0,    0},
+	{STD_UNDO,		 216,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+	{VIEW_LIST,		 217,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+    {STD_PROPERTIES, 218,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+};
+
+// Array that stores the band configuration
+COMMANDBANDSRESTOREINFO cbr[NUMBANDS];
+INT nBandOrder[NUMBANDS];
+
+//----------------------------------------------------------------------
+// CreateCommandBand - Create a formatted command band control.
+//
+int CreateCommandBand (HWND hWnd, BOOL fFirst) {
+    HWND hwndCB, hwndBand, hwndChild;
+    INT i, nBand, nBtnIndex;
+    LONG lStyle;
+    HBITMAP hBmp;
+    HIMAGELIST himl;
+    REBARBANDINFO rbi[NUMBANDS];
+
+    // Create image list control for bitmaps for minimized bands.
+    himl = ImageList_Create (16, 16, ILC_COLOR, 3, 0);
+    // Load first two images from one bitmap.
+    hBmp = LoadBitmap (hInst, MAKEINTRESOURCE(IDB_CMDBAR));
+    ImageList_Add (himl, hBmp, NULL);
+    DeleteObject (hBmp);
+    // Load third image as a single bitmap.
+    hBmp = LoadBitmap (hInst, MAKEINTRESOURCE(IDB_CMDBAND));
+    ImageList_Add (himl, hBmp, NULL);
+    DeleteObject (hBmp);
+	hBmp = LoadBitmap (hInst, MAKEINTRESOURCE(IDB_CMDEDIT));
+    ImageList_Add (himl, hBmp, NULL);
+    DeleteObject (hBmp);
+    // Create a command band.
+    hwndCB = CommandBands_Create (hInst, hWnd, IDC_CMDBAND,
+                                  RBS_SMARTLABELS |
+                                  RBS_AUTOSIZE | RBS_VARHEIGHT, himl);
+
+    // Load bitmap used as background for command bar.
+    hBmp = LoadBitmap (hInst, TEXT ("CmdBarBack"));
+    // Initialize common REBARBANDINFO structure fields.
+    for (i = 0; i < dim(rbi); i++) {
+        rbi[i].cbSize = sizeof (REBARBANDINFO);
+        rbi[i].fMask = RBBIM_ID | RBBIM_IMAGE | RBBIM_SIZE |
+                       /*RBBIM_BACKGROUND | */ RBBIM_STYLE;
+        rbi[i].wID = IDB_CMDBAND+i;
+//        rbi[i].hbmBack = hBmp;
+    }
+
+    // If first time, initialize the restore structure since it is
+    // used to initialize the band size and style fields.
+    if (fFirst) {
+        nBtnIndex = 1;
+        cbr[0].cxRestored = 225;
+        cbr[1].cxRestored = 210;
+        cbr[1].fStyle = RBBS_FIXEDBMP;
+    } else {
+
+    }
+    // Initialize REBARBANDINFO structure for each band.
+    // 1. Menu band
+    rbi[0].fStyle = RBBS_FIXEDBMP | RBBS_NOGRIPPER;
+    rbi[0].cx = cbr[0].cxRestored;
+    rbi[0].iImage = 0;
+
+    // 2. Standard button band
+    rbi[nBtnIndex].fMask |= RBBIM_TEXT;
+    rbi[nBtnIndex].iImage = 1;
+    rbi[nBtnIndex].lpText = TEXT ("");
+    // The next two parameters are initialized from saved data.
+    rbi[nBtnIndex].cx = cbr[1].cxRestored;
+    rbi[nBtnIndex].fStyle = cbr[1].fStyle;
+
+    // 3. Edit control band
+    hwndChild = CreateWindow (TEXT ("edit"), TEXT (""),
+                  WS_VISIBLE | WS_CHILD | ES_MULTILINE | WS_BORDER,
+                  0, 0, 10, 5, hWnd, (HMENU)IDC_EDITCTL, hInst, NULL);
+
+    // Add bands.
+    CommandBands_AddBands (hwndCB, hInst, 3, rbi);
+
+    // Add menu to first band.
+    hwndBand = CommandBands_GetCommandBar (hwndCB, 0);
+    CommandBar_InsertMenubar (hwndBand, hInst, IDR_MENU1, 0);
+    // Add standard buttons to second band.
+    hwndBand = CommandBands_GetCommandBar (hwndCB, nBtnIndex);
+    // Insert buttons
+    CommandBar_AddBitmap (hwndBand, HINST_COMMCTRL, IDB_STD_SMALL_COLOR,
+                          16, 0, 0);
+    CommandBar_AddButtons (hwndBand, dim(tbCBStdBtns), tbCBStdBtns);
+
+    // Modify the style flags of each command bar to make transparent.
+    for (i = 0; i < NUMBANDS; i++) {
+        hwndBand = CommandBands_GetCommandBar (hwndCB, i);
+        lStyle = SendMessage (hwndBand, TB_GETSTYLE, 0, 0);
+        lStyle |= TBSTYLE_TRANSPARENT;
+        SendMessage (hwndBand, TB_SETSTYLE, 0, lStyle);
+    }
+
+    // If not the first time the command band has been created, restore
+    // the user's last configuration.
+    if (!fFirst) {
+        for (i = 0; i < NUMBANDS; i++) {
+            if (cbr[i].fMaximized) {
+                nBand = SendMessage (hwndCB, RB_IDTOINDEX,
+                                     cbr[i].wID, 0);
+                SendMessage (hwndCB, RB_MAXIMIZEBAND, nBand, TRUE);
+            }
+        }
+    }
+    // Add exit button to command band.
+    CommandBands_AddAdornments (hwndCB, hInst, 0, NULL);
+    return 0;
+}

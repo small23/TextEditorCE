@@ -12,11 +12,13 @@
 #include "GraphicsFunctions.h"
 #include "DebugFunctions.h"
 
+
 LRESULT CALLBACK MainWndProc (HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 
 void Setup(HWND lParam);
 int GetFileName (HWND hWnd, LPTSTR szFileName, int nMax);
+int CreateCommandBand (HWND hWnd, BOOL fFirst);
 
 int oldPos;
 int segmentsCount=0;
@@ -29,3 +31,4 @@ HWND				hwndCBND;
 HWND				hwndSB;
 HWND				hwndMW;
 HFONT				hfont;
+
