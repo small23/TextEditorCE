@@ -131,8 +131,11 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 				carrage++;
 				break;
 			}
-			
+			tagPOINT coords;
+			GetCaretPos(&coords);
 			int b=0; 
+			coords.x+=5;
+			SetCaretPos(coords.x, coords.y);
 			ReleaseDC(hWnd,hdc);
 			InvalidateRect(hWnd,NULL,TRUE);
 			return 0;
@@ -192,6 +195,9 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 	case WM_CREATE:
 		{
 			CreateCommandBand (hWnd, TRUE);
+			CreateCaret(hWnd, (HBITMAP) NULL, 2,10);
+			SetCaretPos(100,100);
+			ShowCaret(hWnd);
 
 			return 0;
 		}
@@ -420,18 +426,16 @@ int CreateCommandBand (HWND hWnd, BOOL fFirst) {
 
     // Create image list control for bitmaps for minimized bands.
     himl = ImageList_Create (16, 16, ILC_COLOR, 3, 0);
-    // Load first two images from one bitmap.
     hBmp = LoadBitmap (hInst, MAKEINTRESOURCE(IDB_CMDBAR));
     ImageList_Add (himl, hBmp, NULL);
     DeleteObject (hBmp);
-    // Load third image as a single bitmap.
     hBmp = LoadBitmap (hInst, MAKEINTRESOURCE(IDB_CMDBAND));
     ImageList_Add (himl, hBmp, NULL);
     DeleteObject (hBmp);
 	hBmp = LoadBitmap (hInst, MAKEINTRESOURCE(IDB_CMDEDIT));
     ImageList_Add (himl, hBmp, NULL);
     DeleteObject (hBmp);
-    // Create a command band.
+   
     hwndCB = CommandBands_Create (hInst, hWnd, IDC_CMDBAND,
                                   RBS_SMARTLABELS |
                                   RBS_AUTOSIZE | RBS_VARHEIGHT, himl);
