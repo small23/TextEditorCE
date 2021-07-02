@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include "GlobalDefinitions.h"
 #include "textData.h"
-//#include "FontsStorage.h"
 
 typedef struct
 {
@@ -14,7 +13,7 @@ typedef struct
 
 }GFDRAWEDLINES;
 
-void DrawTextByLine(SEGMENT* segments,int segmentCount, int a, int b , int c, HWND hWnd, RECT rect);
-void DrawTextByLineChoosenHDC(SEGMENT* segments,int segmentCount, int newLinePointer, int oldLinePointer , int redrawAll, int pageSize, HDC hdc, RECT rect);
-void DrawCursor(HDC hdc);
+void GF_DrawTextByLine(SEGMENT* segments,int segmentCount, int a, int b , int c, HWND hWnd, RECT rect);
+void GF_DrawTextByLineChoosenHDC(SEGMENT* segments,int segmentCount, int newLinePointer, int oldLinePointer , int redrawAll, int pageSize, HDC hdc, RECT rect);
+void GF_DrawCursor(HDC hdc);
 GFDRAWEDLINES* GetDrawedLines();

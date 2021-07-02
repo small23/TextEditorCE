@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "resource.h"
 #include <Commdlg.h>
-#include <Commctrl.h>
+#include <commctrl.h>  
 #include "GlobalDefinitions.h"
 #include "textData.h"
 #include "TextOperations.h"

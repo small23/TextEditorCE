@@ -12,8 +12,8 @@ typedef struct
 	int position;
 }TOCURSORPOS;
 
-void GetTextSegments(HWND hWnd, SEGMENT* segments,int* segmentsCount);
-void RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect);
-void InsertSymbol(SEGMENT* segments, int segmentNum, int position, wchar_t simbol, HDC hdc, RECT rect);
-void CreateFont();
-HFONT* GetFonts(int *ArrayCounter);
+void TO_GetTextSegments(HWND hWnd, SEGMENT* segments,int* segmentsCount);
+void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect);
+void TO_InsertSymbol(SEGMENT* segments, int segmentNum, int position, wchar_t simbol, HDC hdc, RECT rect);
+void TO_CreateFont();
+HFONT* TO_GetFonts(int *ArrayCounter);

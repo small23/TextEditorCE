@@ -18,28 +18,28 @@ int fontsArraySize=0;
 int fontsArrayCounter=0;
 TOCURSORPOS cursorPosition={0,0};
 
-TOCURSORPOS* GetCursorPosition()
+TOCURSORPOS* TO_GetCursorPosition()
 {
 	return &cursorPosition;
 }
 
-void SetCursorPositionByTap(int x, int y)
+void TO_SetCursorPositionByTap(int x, int y)
 {
 	
 }
 
-void SetCursorPositionByShift(int shift)
+void TO_SetCursorPositionByShift(int shift)
 {
 	
 }
 
-HFONT* GetFonts(int *ArrayCounter)
+HFONT* TO_GetFonts(int *ArrayCounter)
 {
 	*ArrayCounter=fontsArrayCounter; 
 	return fonts;
 }
 
-void CreateFont()
+void TO_CreateFont()
 {
 	LOGFONT lf;
 	memset(&lf, 0, sizeof(LOGFONT));          // Clear out structure.
@@ -58,7 +58,7 @@ void CreateFont()
 	fontsArrayCounter=1;
 }
 
-void GetTextSegments(HWND hWnd, SEGMENT* segments, int* segmentsCount)
+void TO_GetTextSegments(HWND hWnd, SEGMENT* segments, int* segmentsCount)
 {
 	RECT rect;
 	HDC hdc;
@@ -93,14 +93,14 @@ void GetTextSegments(HWND hWnd, SEGMENT* segments, int* segmentsCount)
 		
 		memcpy(segments[i].text,texts[i],segments[i].length*sizeof(wchar_t));
 
-		RecheckSpacesAndLines(segments, i, hdc, rect);
+		TO_RecheckSpacesAndLines(segments, i, hdc, rect);
 
 		(*segmentsCount)++;
 	}
 	ReleaseDC(hWnd,hdc);
 }
 
-void RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
+void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 {		
 	SelectObject(hdc, fonts[0]);
 	segments[i].linesCounter=0;
@@ -193,7 +193,7 @@ void RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 	}
 }
 
-void InsertSymbol(SEGMENT* segments,int segmentNum, int currPos, wchar_t simbol, HDC hdc, RECT rect)
+void TO_InsertSymbol(SEGMENT* segments,int segmentNum, int currPos, wchar_t simbol, HDC hdc, RECT rect)
 {
 	if (segments[segmentNum].length>=segments[segmentNum].textArraySize)
 	{
@@ -203,5 +203,5 @@ void InsertSymbol(SEGMENT* segments,int segmentNum, int currPos, wchar_t simbol,
 	memmove(&segments[segmentNum].text[currPos+1],&segments[segmentNum].text[currPos], (segments[segmentNum].length-currPos)*sizeof(wchar_t));
 	segments[segmentNum].text[currPos]=simbol;
 	segments[segmentNum].length++;
-	RecheckSpacesAndLines(segments, segmentNum, hdc, rect);
+	TO_RecheckSpacesAndLines(segments, segmentNum, hdc, rect);
 }

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DebugFunctions.h"
 
-void StringSizeTest(HWND hWnd)
+void DF_StringSizeTest(HWND hWnd)
 {
 	SIZE results;
 	TEXTMETRIC test;
@@ -9,7 +9,7 @@ void StringSizeTest(HWND hWnd)
 	wchar_t bufferA[512]=TEXT("Some kind  q|{} of telkglosdf;ljas;ldfdiuagsdgajsghdkixt");
 	int length = wcslen(bufferA);
 	
-	__int64 start = Milliseconds_now();
+	__int64 start = DF_Milliseconds_now();
 	HDC hdc;
 	hdc = GetDC(hWnd);
 	GetTextMetrics(hdc, &test ); 
@@ -20,7 +20,7 @@ void StringSizeTest(HWND hWnd)
 		
 	}
 	ReleaseDC(hWnd,hdc);
-	__int64 stop = Milliseconds_now();
+	__int64 stop = DF_Milliseconds_now();
 	__int64 timer=stop-start;
 	
 	unsigned short  buffer[200];
@@ -31,12 +31,12 @@ void StringSizeTest(HWND hWnd)
 	return;
 }
 
-void MemOperationsTest()
+void DF_MemOperationsTest()
 {
 	wchar_t bufferA[512]=TEXT("Some kind of text");
 	int textLength=wcslen(bufferA)*sizeof(wchar_t);
 	int currPos=4;
-	__int64 start = Milliseconds_now();
+	__int64 start = DF_Milliseconds_now();
 	for (long i=0; i<1000000; i++)
 	{
 		memmove(&bufferA[currPos+1],&bufferA[currPos], textLength-currPos);
@@ -44,7 +44,7 @@ void MemOperationsTest()
 		memmove(&bufferA[currPos],&bufferA[currPos+1], textLength-currPos);
 	}
 
-	__int64 stop = Milliseconds_now();
+	__int64 stop = DF_Milliseconds_now();
 
 	__int64 timer=stop-start;
 	
@@ -55,7 +55,7 @@ void MemOperationsTest()
 	MessageBox(NULL, buffer, TEXT("Results"), MB_OK);
 }
 
-void SpeedTest(HWND hWnd, int lineScrolls, SEGMENT* segments, int segmentsCount)
+void DF_SpeedTest(HWND hWnd, int lineScrolls, SEGMENT* segments, int segmentsCount)
 {
 
 	SCROLLINFO si;
@@ -79,31 +79,31 @@ void SpeedTest(HWND hWnd, int lineScrolls, SEGMENT* segments, int segmentsCount)
 	
 	HDC hdc;
 	
-	start= Milliseconds_now();
+	start= DF_Milliseconds_now();
 	
 	int a=lineScrolls;
 	int b=0;
 	int c=0;;
 	for (int j=0; j<5; j++)
 	{
-		part2=Milliseconds_now();
+		part2=DF_Milliseconds_now();
 		for (int jj=0; jj<50; jj++)
 		{
 			hdc = GetDC(hWnd);
 			GetClientRect(hWnd, &rect);
 			rect.top=TOPHEADERDEADZONE;
-			DrawTextByLineChoosenHDC(segments, segmentsCount, a, b , 0, 13,hdc, rect);
+			GF_DrawTextByLineChoosenHDC(segments, segmentsCount, a, b , 0, 13,hdc, rect);
 			ReleaseDC(hWnd,hdc);
 			
 			c=a;
 			a=b;
 			b=c;
 		}
-		part3=Milliseconds_now();
+		part3=DF_Milliseconds_now();
 		updateTime+=part3-part2;
 	}
 	
-	stop=Milliseconds_now();
+	stop=DF_Milliseconds_now();
 	__int64 timer=stop-start;
 	
 	unsigned short  buffer[200];
@@ -114,7 +114,7 @@ void SpeedTest(HWND hWnd, int lineScrolls, SEGMENT* segments, int segmentsCount)
 	MessageBox(NULL, buffer, TEXT("Results"), MB_OK);	
 }
 
-__int64 Milliseconds_now(){
+__int64 DF_Milliseconds_now(){
     static _LARGE_INTEGER s_frequency;
     static BOOL s_use_qpc = QueryPerformanceFrequency(&s_frequency);
     if (s_use_qpc) {

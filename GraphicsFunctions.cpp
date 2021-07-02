@@ -7,17 +7,17 @@ bool cursorHighLighted=false;
 
 GFDRAWEDLINES drawedLines = {0,0,0};
 
-void DrawCursor(HDC hdc)
+void GF_DrawCursor(HDC hdc)
 {
 	
 }
 
-GFDRAWEDLINES* GetDrawedLines()
+GFDRAWEDLINES* GF_GetDrawedLines()
 {
 	return &drawedLines;
 }
 
-void DrawTextByLineChoosenHDC(SEGMENT* segments, int segmentsCount, int a, int b , int reserverd, int pageSize, HDC hdc, RECT rect)
+void GF_DrawTextByLineChoosenHDC(SEGMENT* segments, int segmentsCount, int a, int b , int reserverd, int pageSize, HDC hdc, RECT rect)
 {
 	int currentLine=0;
 	int inSegmentLine=0;
@@ -46,7 +46,7 @@ void DrawTextByLineChoosenHDC(SEGMENT* segments, int segmentsCount, int a, int b
 	int rectTop=rect.top;
 	int counter=0;
 	int arraySize=0;
-	HFONT* fonts=GetFonts(&arraySize);
+	HFONT* fonts=TO_GetFonts(&arraySize);
 	SelectObject(hdc, fonts[0]);
 	
 	drawedLines.segment = segmentPointer;
@@ -170,7 +170,7 @@ void DrawTextByLineChoosenHDC(SEGMENT* segments, int segmentsCount, int a, int b
 	
 }
 
-void DrawTextByLine(SEGMENT* segments, int segmentsCount, int a, int b , int c, HWND hWnd, RECT rect)
+void GF_DrawTextByLine(SEGMENT* segments, int segmentsCount, int a, int b , int c, HWND hWnd, RECT rect)
 {
 	PAINTSTRUCT ps;
     HDC hdc;
@@ -198,7 +198,7 @@ void DrawTextByLine(SEGMENT* segments, int segmentsCount, int a, int b , int c, 
 	hdc = BeginPaint (hWnd, &ps); 
 	
 	int arraySize=0;
-	HFONT* fonts=GetFonts(&arraySize);
+	HFONT* fonts=TO_GetFonts(&arraySize);
 	SelectObject(hdc, fonts[0]);
 
 	int lastHeight=rect.top;

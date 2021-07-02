@@ -2,92 +2,20 @@
 //
 #include "stdafx.h"
 #include "ProjectWinCE.h"
-#include <commctrl.h>                // Command bar includes
 
 int carrage=0;
-
+int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+				 LPWSTR lpCmdLine, int nCmdShow);
 //======================================================================
 // Program entry point
 //
 
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPWSTR lpCmdLine, int nCmdShow) {
-    WNDCLASS wc;
-    HWND hWnd;
     MSG msg;
-	HICON hIcon;
-	INITCOMMONCONTROLSEX icex;
 	
-	hIcon=LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
-	
-	hInst = hInstance;
-    // Register application main window class.
-    wc.style = 0;                             // Window style
-    wc.lpfnWndProc = MainWndProc;             // Callback function
-    wc.cbClsExtra = 0;                        // Extra class data
-    wc.cbWndExtra = 0;                        // Extra window data
-    wc.hInstance = hInstance;                 // Owner handle
-    wc.hIcon = NULL,                          // Application icon
-		wc.hCursor = 0;// Default cursor
-    wc.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH);
-    wc.lpszMenuName =  NULL;                  // Menu name
-    wc.lpszClassName = TEXT("MyClass");       // Window class name
-	
-    if (RegisterClass (&wc) == 0) return -1;
-	
-	icex.dwSize = sizeof (INITCOMMONCONTROLSEX);
-    icex.dwICC = ICC_COOL_CLASSES;
-    InitCommonControlsEx (&icex);
-	
-    // Create main window.
-    hWnd = CreateWindowEx(WS_EX_NODRAG,       // Ex style flags
-		TEXT("MyClass"),    // Window class
-		TEXT("WinCE Project"),      // Window title
-		// Style flags
-		WS_VISIBLE,
-		CW_USEDEFAULT,      // x position
-		CW_USEDEFAULT,      // y position
-		CW_USEDEFAULT,      // Initial width
-		CW_USEDEFAULT,      // Initial height
-		NULL,               // Parent
-		NULL,               // Menu, must be null
-		hInstance,          // Application instance
-		NULL);              // Pointer to create parameters
-    if (!IsWindow (hWnd)) return -2;  // Fail code if not created.
-	
-	SendMessage(hWnd, WM_SETICON, FALSE, (LPARAM)hIcon);
-	hwndMW=hWnd;
-	
-	RECT rect;
-	GetClientRect (hWnd, &rect);
-	
-	hwndSB = CreateWindowEx( 
-		0,                      // no extended styles 
-		L"SCROLLBAR",           // scroll bar control class 
-		(PTSTR) NULL,           // no window text 
-		WS_CHILD | WS_VISIBLE   // window styles  
-		| SBS_VERT,         // horizontal scroll bar style 
-		rect.right-SBWIDTH,              // horizontal position 
-		TOPHEADERDEADZONE,				// vertical position 
-		rect.right,             // width of the scroll bar 
-		rect.bottom-TOPHEADERDEADZONE,               // height of the scroll bar
-		hWnd,					// handle to main window 
-		(HMENU) NULL,           // no menu 
-		hInstance,              // instance owning this window 
-		(PVOID) NULL            // pointer not needed 
-        );
-	
-	segments = new SEGMENT[50];
-	CreateFont();
-	GetTextSegments(hWnd, segments, &segmentsCount);
-	Setup(hwndSB);
-	
-    // Standard show and update calls
-    ShowWindow (hWnd, nCmdShow);
-    UpdateWindow (hWnd);
-	
-	if (hwndCB)
-		CommandBar_Show(hwndCB, TRUE);
+	if(InitInstance(hInstance, hPrevInstance, lpCmdLine, nCmdShow)!=0)
+		 return -1;
 	
     // Application message loop
     while (GetMessage (&msg, NULL, 0, 0)) {
@@ -124,13 +52,13 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 					
 					break;
 				case L'\r':
-					InsertSymbol(segments,0,9,charCode,hdc, rect);
+					TO_InsertSymbol(segments,0,9,charCode,hdc, rect);
 					break;
 				case L'\n':
-					InsertSymbol(segments,0,9,charCode,hdc, rect);
+					TO_InsertSymbol(segments,0,9,charCode,hdc, rect);
 					break;
 				default:
-					InsertSymbol(segments,0,carrage,charCode,hdc, rect);
+					TO_InsertSymbol(segments,0,carrage,charCode,hdc, rect);
 					carrage++;
 					break;
 				}
@@ -206,12 +134,12 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 				}
 			case ID_TOOLS_DEBUG_SPEEDTEST2:
 				{
-				SpeedTest(hWnd, 2, segments, segmentsCount);
+				DF_SpeedTest(hWnd, 2, segments, segmentsCount);
 				return 0;
 				}
 			case ID_TOOLS_DEBUG_SPEEDTEST10:
 				{
-				SpeedTest(hWnd, 10, segments, segmentsCount);
+				DF_SpeedTest(hWnd, 10, segments, segmentsCount);
 				return 0;
 				}
 			case ID_FILE_OPEN:
@@ -222,12 +150,12 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 				}
 			case ID_TOOLS_DEBUG_MEMORYOPERATIONS:
 				{
-				MemOperationsTest();
+				DF_MemOperationsTest();
 				return 0;
 				}
 			case ID_TOOLS_DEBUG_STRINGCHECKLENGTHTEST:
 				{
-				StringSizeTest(hWnd);
+				DF_StringSizeTest(hWnd);
 				return 0;
 				}				
 			}
@@ -244,7 +172,7 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 		}
 	case WM_VSCROLL:
 		{
-		int sPos, sPosOrg;
+		unsigned int sPos, sPosOrg;
 		HideCaret(hWnd);
 		// Get scroll bar position.
 		si.cbSize = sizeof (si);
@@ -306,7 +234,7 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 			rect.top=TOPHEADERDEADZONE;
 			rect.left=3;
 			rect.right-=SBWIDTH;
-			DrawTextByLineChoosenHDC(segments, segmentsCount, si.nPos, sPosOrg , 0, si.nPage, hdc, rect);
+			GF_DrawTextByLineChoosenHDC(segments, segmentsCount, si.nPos, sPosOrg , 0, si.nPage, hdc, rect);
 			ReleaseDC(hWnd,hdc);
 			}
 		ShowCaret(hWnd);
@@ -329,7 +257,7 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 		fillingRect.left=3;
 		rect.right-=SBWIDTH;
 		
-		DrawTextByLine(segments, segmentsCount, si.nPos, oldPos , 1, hWnd,rect);
+		GF_DrawTextByLine(segments, segmentsCount, si.nPos, oldPos , 1, hWnd,rect);
 		return 0;
 		}
 	case WM_DESTROY:
@@ -341,6 +269,83 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
     return DefWindowProc (hWnd, wMsg, wParam, lParam);
 }
 
+int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+				 LPWSTR lpCmdLine, int nCmdShow)
+	{
+	WNDCLASS wc;
+    HWND hWnd;
+	HICON hIcon;
+	INITCOMMONCONTROLSEX icex;
+	
+	hIcon=LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
+	
+	hInst = hInstance;
+    wc.style = 0;                             // Window style
+    wc.lpfnWndProc = MainWndProc;             // Callback function
+    wc.cbClsExtra = 0;                        // Extra class data
+    wc.cbWndExtra = 0;                        // Extra window data
+    wc.hInstance = hInstance;                 // Owner handle
+    wc.hIcon = NULL,                          // Application icon
+	wc.hCursor = 0;							  // Default cursor
+    wc.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH);
+    wc.lpszMenuName =  NULL;                  // Menu name
+    wc.lpszClassName = TEXT("MyClass");       // Window class name
+	
+    if (RegisterClass (&wc) == 0) return -1;
+	
+	icex.dwSize = sizeof (INITCOMMONCONTROLSEX);
+    icex.dwICC = ICC_COOL_CLASSES;
+    InitCommonControlsEx (&icex);
+	
+    // Create main window.
+    hWnd = CreateWindowEx(WS_EX_NODRAG,       // Ex style flags
+		TEXT("MyClass"),    // Window class
+		TEXT("KWord"),      // Window title
+		// Style flags
+		WS_VISIBLE,
+		CW_USEDEFAULT,      // x position
+		CW_USEDEFAULT,      // y position
+		CW_USEDEFAULT,      // Initial width
+		CW_USEDEFAULT,      // Initial height
+		NULL,               // Parent
+		NULL,               // Menu, must be null
+		hInstance,          // Application instance
+		NULL);              // Pointer to create parameters
+    if (!IsWindow (hWnd)) return -2; 
+	
+	SendMessage(hWnd, WM_SETICON, FALSE, (LPARAM)hIcon);
+	hwndMW=hWnd;
+	
+	RECT rect;
+	GetClientRect (hWnd, &rect);
+	
+	hwndSB = CreateWindowEx( 
+		0,                      // no extended styles 
+		L"SCROLLBAR",           // scroll bar control class 
+		(PTSTR) NULL,           // no window text 
+		WS_CHILD | WS_VISIBLE   // window styles  
+		| SBS_VERT,				// horizontal scroll bar style 
+		rect.right-SBWIDTH,     // horizontal position 
+		TOPHEADERDEADZONE,		// vertical position 
+		rect.right,             // width of the scroll bar 
+		rect.bottom-TOPHEADERDEADZONE, // height of the scroll bar
+		hWnd,					// handle to main window 
+		(HMENU) NULL,           // no menu 
+		hInstance,              // instance owning this window 
+		(PVOID) NULL            // pointer not needed 
+        );
+	
+	if (!IsWindow (hwndSB)) return -3;
+
+	segments = new SEGMENT[50];
+	TO_CreateFont();
+	TO_GetTextSegments(hWnd, segments, &segmentsCount);
+	Setup(hwndSB);
+
+    ShowWindow (hWnd, nCmdShow);
+    UpdateWindow (hWnd);
+	return 0;
+	}
 
 void Setup(HWND lParam)
 	{	
