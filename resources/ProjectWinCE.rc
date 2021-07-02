@@ -1,13 +1,13 @@
 //Microsoft Developer Studio generated resource script.
 //
-#include "resource.h"
+#include "headers\resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "newres.h"
+#include "headers\newres.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
