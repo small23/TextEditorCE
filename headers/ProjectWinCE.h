@@ -30,5 +30,7 @@ HWND				hwndCB;			// The command bar handle
 HWND				hwndCBND;
 HWND				hwndSB;
 HWND				hwndMW;
+HWND				hwndFONT;
+HWND				hwndFONTSIZE;
 HFONT				hfont;
 

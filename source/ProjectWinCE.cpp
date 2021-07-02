@@ -34,8 +34,13 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
     RECT rect;
     HDC hdc; 
 	SCROLLINFO si;
+	WORD wNotifyCode;
+	HWND hwndCtl;
+
 	bool reRender=false;
 	int wmId, wmEvent;
+	wNotifyCode = (WORD) HIWORD (wParam);
+    hwndCtl = (HWND) lParam;
     switch (wMsg) 
 		{
 		case WM_CHAR:
@@ -163,10 +168,7 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 		}
 	case WM_CREATE:
 		{
-		CreateCommandBand (hWnd, TRUE);
-		CreateCaret(hWnd, (HBITMAP) NULL, 2,10);
-		SetCaretPos(100,100);
-		ShowCaret(hWnd);
+
 		
 		return 0;
 		}
@@ -342,6 +344,11 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	TO_GetTextSegments(hWnd, segments, &segmentsCount);
 	Setup(hwndSB);
 
+	CreateCommandBand (hWnd, TRUE);
+	CreateCaret(hWnd, (HBITMAP) NULL, 2,10);
+	SetCaretPos(100,100);
+	ShowCaret(hWnd);
+
     ShowWindow (hWnd, nCmdShow);
     UpdateWindow (hWnd);
 	return 0;
@@ -484,8 +491,7 @@ int CreateCommandBand (HWND hWnd, BOOL fFirst) {
     DeleteObject (hBmp);
 	
     hwndCB = CommandBands_Create (hInst, hWnd, IDC_CMDBAND,
-		RBS_SMARTLABELS |
-		RBS_AUTOSIZE | RBS_VARHEIGHT, himl);
+		RBS_SMARTLABELS, himl);
 	
     // Load bitmap used as background for command bar.
     hBmp = LoadBitmap (hInst, TEXT ("CmdBarBack"));
@@ -502,90 +508,88 @@ int CreateCommandBand (HWND hWnd, BOOL fFirst) {
     // used to initialize the band size and style fields.
     if (fFirst) {
         nBtnIndex = 1;
-        cbr[0].cxRestored = 225;
+        cbr[0].cxRestored = 230;
         cbr[1].cxRestored = 210;
         cbr[1].fStyle = RBBS_FIXEDBMP;
-		} else {
-		
-			}
-		// Initialize REBARBANDINFO structure for each band.
-		// 1. Menu band
-		rbi[0].fStyle = RBBS_FIXEDBMP | RBBS_NOGRIPPER;
-		rbi[0].cx = cbr[0].cxRestored;
-		rbi[0].iImage = 0;
-		
-		// 2. Standard button band
-		rbi[nBtnIndex].fMask |= RBBIM_TEXT;
-		rbi[nBtnIndex].iImage = 1;
-		rbi[nBtnIndex].lpText = TEXT ("");
-		// The next two parameters are initialized from saved data.
-		rbi[nBtnIndex].cx = cbr[1].cxRestored;
-		rbi[nBtnIndex].fStyle = cbr[1].fStyle;
-		
-		// 3. Edit control band
-		hwndChild = CreateWindow (TEXT ("edit"), TEXT (""),
-			WS_VISIBLE | WS_CHILD | ES_MULTILINE | WS_BORDER,
-			0, 0, 10, 5, hWnd, (HMENU)IDC_EDITCTL, hInst, NULL);
-		
-		// Add bands.
-		CommandBands_AddBands (hwndCB, hInst, 3, rbi);
-		
-		// Add menu to first band.
-		hwndBand = CommandBands_GetCommandBar (hwndCB, 0);
-		CommandBar_InsertMenubar (hwndBand, hInst, IDR_MENU1, 0);
-		// Add standard buttons to second band.
-		hwndBand = CommandBands_GetCommandBar (hwndCB, nBtnIndex);
-		// Insert buttons
-		CommandBar_AddBitmap (hwndBand, HINST_COMMCTRL, IDB_STD_SMALL_COLOR,
-			16, 0, 0);
-		CommandBar_AddButtons (hwndBand, dim(tbCBStdBtns), tbCBStdBtns);
-		
-		TCHAR szTmp[64];
-		
-		CommandBar_InsertComboBox (hwndBand, hInst, 75,
-			CBS_DROPDOWNLIST | WS_VSCROLL,
-			IDC_FONT, 10);
-		// Fill in combo box.
-		for (i = 0; i < 10; i++) {
-			wsprintf (szTmp, TEXT ("Item %d"), i);
-			SendDlgItemMessageW(hwndBand, IDC_FONT, CB_INSERTSTRING, -1,
-				(LPARAM)szTmp);
-			}
-		
-		
-		CommandBar_InsertComboBox (hwndBand, hInst, 40,
-			CBS_DROPDOWNLIST | WS_VSCROLL,
-			IDC_FONTSIZE, 11);
-		// Fill in combo box.
-		for (i = 0; i < 10; i++) {
-			wsprintf (szTmp, TEXT ("%d"), i);
-			SendDlgItemMessageW(hwndBand, IDC_FONTSIZE, CB_INSERTSTRING, -1,
-				(LPARAM)szTmp);
-			}
-		
-		SendDlgItemMessageW (hwndBand, IDC_FONT, CB_SETCURSEL, 0, 0);
-		SendDlgItemMessageW (hwndBand, IDC_FONTSIZE, CB_SETCURSEL, 0, 0);
-		
-		// Modify the style flags of each command bar to make transparent.
+		} 
+	// Initialize REBARBANDINFO structure for each band.
+	// 1. Menu band
+	rbi[0].fStyle = RBBS_FIXEDBMP | RBBS_NOGRIPPER;
+	rbi[0].cx = cbr[0].cxRestored;
+	rbi[0].iImage = 0;
+	
+	// 2. Standard button band
+	rbi[nBtnIndex].fMask |= RBBIM_TEXT;
+	rbi[nBtnIndex].iImage = 1;
+	rbi[nBtnIndex].lpText = TEXT ("");
+	// The next two parameters are initialized from saved data.
+	rbi[nBtnIndex].cx = cbr[1].cxRestored;
+	rbi[nBtnIndex].fStyle = cbr[1].fStyle;
+	
+	// 3. Edit control band
+	hwndChild = CreateWindow (TEXT ("edit"), TEXT (""),
+		WS_VISIBLE | WS_CHILD | ES_MULTILINE | WS_BORDER,
+		0, 0, 10, 5, hWnd, (HMENU)IDC_EDITCTL, hInst, NULL);
+	
+	// Add bands.
+	CommandBands_AddBands (hwndCB, hInst, 3, rbi);
+	
+	// Add menu to first band.
+	hwndBand = CommandBands_GetCommandBar (hwndCB, 0);
+	CommandBar_InsertMenubar (hwndBand, hInst, IDR_MENU1, 0);
+	// Add standard buttons to second band.
+	hwndBand = CommandBands_GetCommandBar (hwndCB, nBtnIndex);
+	// Insert buttons
+	CommandBar_AddBitmap (hwndBand, HINST_COMMCTRL, IDB_STD_SMALL_COLOR,
+		16, 0, 0);
+	CommandBar_AddButtons (hwndBand, dim(tbCBStdBtns), tbCBStdBtns);
+	
+	TCHAR szTmp[64];
+	
+	hwndFONT = CommandBar_InsertComboBox (hwndBand, hInst, 75,
+		CBS_DROPDOWNLIST | WS_VSCROLL,
+		IDC_FONT, 10);
+	// Fill in combo box.
+	for (i = 0; i < 10; i++) {
+		wsprintf (szTmp, TEXT ("Item %d"), i);
+		SendDlgItemMessageW(hwndBand, IDC_FONT, CB_INSERTSTRING, -1,
+			(LPARAM)szTmp);
+		}
+	
+	
+	hwndFONTSIZE = CommandBar_InsertComboBox (hwndBand, hInst, 40,
+		CBS_DROPDOWNLIST | WS_VSCROLL,
+		IDC_FONTSIZE, 11);
+	// Fill in combo box.
+	for (i = 0; i < 10; i++) {
+		wsprintf (szTmp, TEXT ("%d"), i);
+		SendDlgItemMessageW(hwndBand, IDC_FONTSIZE, CB_INSERTSTRING, -1,
+			(LPARAM)szTmp);
+		}
+	
+	SendDlgItemMessageW (hwndBand, IDC_FONT, CB_SETCURSEL, 0, 0);
+	SendDlgItemMessageW (hwndBand, IDC_FONTSIZE, CB_SETCURSEL, 0, 0);
+	
+	// Modify the style flags of each command bar to make transparent.
+	for (i = 0; i < NUMBANDS; i++) {
+		hwndBand = CommandBands_GetCommandBar (hwndCB, i);
+		lStyle = SendMessage (hwndBand, TB_GETSTYLE, 0, 0);
+		lStyle |= TBSTYLE_TRANSPARENT;
+		SendMessage (hwndBand, TB_SETSTYLE, 0, lStyle);
+		}
+	
+	// If not the first time the command band has been created, restore
+	// the user's last configuration.
+	if (!fFirst) {
 		for (i = 0; i < NUMBANDS; i++) {
-			hwndBand = CommandBands_GetCommandBar (hwndCB, i);
-			lStyle = SendMessage (hwndBand, TB_GETSTYLE, 0, 0);
-			lStyle |= TBSTYLE_TRANSPARENT;
-			SendMessage (hwndBand, TB_SETSTYLE, 0, lStyle);
-			}
-		
-		// If not the first time the command band has been created, restore
-		// the user's last configuration.
-		if (!fFirst) {
-			for (i = 0; i < NUMBANDS; i++) {
-				if (cbr[i].fMaximized) {
-					nBand = SendMessage (hwndCB, RB_IDTOINDEX,
-						cbr[i].wID, 0);
-					SendMessage (hwndCB, RB_MAXIMIZEBAND, nBand, TRUE);
-					}
+			if (cbr[i].fMaximized) {
+				nBand = SendMessage (hwndCB, RB_IDTOINDEX,
+					cbr[i].wID, 0);
+				SendMessage (hwndCB, RB_MAXIMIZEBAND, nBand, TRUE);
 				}
 			}
-		// Add exit button to command band.
-		CommandBands_AddAdornments (hwndCB, hInst, 0, NULL);
-		return 0;
+		}
+	// Add exit button to command band.
+	CommandBands_AddAdornments (hwndCB, hInst, 0, NULL);
+	return 0;
 }
