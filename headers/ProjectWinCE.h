@@ -15,6 +15,13 @@
 
 LRESULT CALLBACK MainWndProc (HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+LRESULT KeydownHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam);
+LRESULT CharHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam);
+LRESULT CommandHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam);
+LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam);
+LRESULT PaintHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam);
+
+
 
 void Setup(HWND lParam);
 int GetFileName (HWND hWnd, LPTSTR szFileName, int nMax);
