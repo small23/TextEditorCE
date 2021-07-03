@@ -26,9 +26,15 @@ LRESULT PaintHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam);
 void Setup(HWND lParam);
 int GetFileName (HWND hWnd, LPTSTR szFileName, int nMax);
 int CreateCommandBand (HWND hWnd, BOOL fFirst);
+int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+				 LPWSTR lpCmdLine, int nCmdShow);
 
 int oldPos;
 int segmentsCount=0;
+int carrage=0;
+
+COMMANDBANDSRESTOREINFO cbr[NUMBANDS];
+INT nBandOrder[NUMBANDS];
 
 SEGMENT *segments;
 
@@ -40,4 +46,18 @@ HWND				hwndMW;
 HWND				hwndFONT;
 HWND				hwndFONTSIZE;
 HFONT				hfont;
+
+const TBBUTTON tbCBStdBtns[] = {
+	//  BitmapIndex      Command  State            Style    UserData  String
+    {STD_FILEOPEN,   211,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+    {STD_FILESAVE,   212,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+    {0,              0,       TBSTATE_ENABLED, TBSTYLE_SEP,    0,    0},
+    {STD_CUT,        213,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+    {STD_COPY,       214,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+    {STD_PASTE,      215,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+    {0,              0,       TBSTATE_ENABLED, TBSTYLE_SEP,    0,    0},
+	{STD_UNDO,		 216,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+	{VIEW_LIST,		 217,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+    {STD_PROPERTIES, 218,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
+	};
 

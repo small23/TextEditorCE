@@ -3,10 +3,6 @@
 #include "stdafx.h"
 #include "ProjectWinCE.h"
 
-int carrage=0;
-int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-				 LPWSTR lpCmdLine, int nCmdShow);
-
 //======================================================================
 // Program entry point
 //
@@ -336,7 +332,7 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     if (!IsWindow (hWnd)) return -2; 
 	
 	hIcon=LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
-	SendMessage(hWnd, WM_SETICON, FALSE, (LPARAM)hIcon);
+	int test = SendMessage(hWnd, WM_SETICON, FALSE, (LPARAM)hIcon);
 	
 	hwndMW=hWnd;
 	
@@ -409,7 +405,6 @@ void Setup(HWND lParam)
 	SetScrollInfo ((HWND)lParam, SB_CTL, &si, TRUE);
 	}
 
-
 // Mesage handler for the About box.
 LRESULT CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	{
@@ -467,26 +462,6 @@ int GetFileName (HWND hWnd, LPTSTR szFileName, int nMax)
 	else
 		return 0;
 	}
-
-
-// Command band button initialization structure
-const TBBUTTON tbCBStdBtns[] = {
-	//  BitmapIndex      Command  State            Style    UserData  String
-    {STD_FILEOPEN,   211,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
-    {STD_FILESAVE,   212,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
-    {0,              0,       TBSTATE_ENABLED, TBSTYLE_SEP,    0,    0},
-    {STD_CUT,        213,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
-    {STD_COPY,       214,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
-    {STD_PASTE,      215,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
-    {0,              0,       TBSTATE_ENABLED, TBSTYLE_SEP,    0,    0},
-	{STD_UNDO,		 216,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
-	{VIEW_LIST,		 217,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
-    {STD_PROPERTIES, 218,     TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,    0},
-	};
-
-// Array that stores the band configuration
-COMMANDBANDSRESTOREINFO cbr[NUMBANDS];
-INT nBandOrder[NUMBANDS];
 
 //----------------------------------------------------------------------
 // CreateCommandBand - Create a formatted command band control.
