@@ -23,7 +23,7 @@ void DF_StringSizeTest(HWND hWnd)
 	__int64 stop = DF_Milliseconds_now();
 	__int64 timer=stop-start;
 	
-	unsigned short  buffer[200];
+	wchar_t  buffer[200];
 	
 	int len=swprintf( buffer,L"Test 100,000 Text length getting, Total:%d ms", timer);
 	
@@ -48,7 +48,7 @@ void DF_MemOperationsTest()
 
 	__int64 timer=stop-start;
 	
-	unsigned short  buffer[200];
+	wchar_t  buffer[200];
 	
 	int len=swprintf( buffer,L"Test 1,000,000 memory shifts (1 pos) and delete char, Total:%d ms", timer);
 	
@@ -106,7 +106,7 @@ void DF_SpeedTest(HWND hWnd, int lineScrolls, SEGMENT* segments, int segmentsCou
 	stop=DF_Milliseconds_now();
 	__int64 timer=stop-start;
 	
-	unsigned short  buffer[200];
+	wchar_t  buffer[200];
 	
 	int len=swprintf( buffer,L"Test 250 redraws, Total:%dms Update%dms ", timer, updateTime);
 	len+=swprintf( buffer+len,L"Update rectangle: top:%dpx left:%dpx right:%dpx bottom:%dpx FPS: %f", rect.top, rect.left, rect.right, rect.bottom, (float)250/(float(timer)/1000.0));

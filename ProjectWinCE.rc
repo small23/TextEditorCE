@@ -1,13 +1,13 @@
 //Microsoft Developer Studio generated resource script.
 //
-#include "..\headers\resource.h"
+#include "headers\resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "..\headers\newres.h"
+#include "headers\newres.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -23,7 +23,7 @@ LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Menubar
+// Menu
 //
 
 IDR_MENU1 MENU DISCARDABLE 
@@ -96,9 +96,9 @@ END
 // Bitmap
 //
 
-IDB_CMDBAR              BITMAP  DISCARDABLE     "CommandBarImg.bmp"
-IDB_CMDEDIT             BITMAP  DISCARDABLE     "CommandEditImg.bmp"
-IDB_CMDBAND             BITMAP  DISCARDABLE     "CommandBandImg.bmp"
+IDB_CMDBAR              BITMAP  DISCARDABLE     "resources\CommandBarImg.bmp"
+IDB_CMDEDIT             BITMAP  DISCARDABLE     "resources\CommandEditImg.bmp"
+IDB_CMDBAND             BITMAP  DISCARDABLE     "resources\CommandBandImg.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -107,7 +107,7 @@ IDB_CMDBAND             BITMAP  DISCARDABLE     "CommandBandImg.bmp"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON    DISCARDABLE     "FileView.ico"
+IDI_ICON1               ICON    DISCARDABLE     "resources\FileView.ico"
 #endif    // Russian resources
 /////////////////////////////////////////////////////////////////////////////
 

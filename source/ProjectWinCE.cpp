@@ -199,7 +199,7 @@ LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	RECT rect;
 	bool reRender=false;
 	
-	unsigned int sPos, sPosOrg;
+	int sPos, sPosOrg;
 	HideCaret(hWnd);
 	// Get scroll bar position.
 	si.cbSize = sizeof(si);
@@ -229,7 +229,6 @@ LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		case SB_PAGEDOWN: // Also SB_PAGERIGHT
 			sPos += si.nPage;
 			reRender = true;
-			//si.nMax=100;
 			break;
 			
 		case SB_THUMBPOSITION:
@@ -245,7 +244,7 @@ LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	// Check range.
 	if (sPos < 0)
 		sPos = 0;
-	if (sPos >= si.nMax - si.nPage + 1)
+	if (sPos > si.nMax - si.nPage + 1)
 		sPos = si.nMax - si.nPage + 1;
 	
 	// Update scroll bar position.
@@ -493,8 +492,8 @@ INT nBandOrder[NUMBANDS];
 // CreateCommandBand - Create a formatted command band control.
 //
 int CreateCommandBand (HWND hWnd, BOOL fFirst) {
-    HWND hwndCB, hwndBand, hwndChild;
-    INT i, nBand, nBtnIndex;
+    HWND hwndCB, hwndBand;
+    INT i;
     LONG lStyle;
     HBITMAP hBmp;
     HIMAGELIST himl;
@@ -526,8 +525,6 @@ int CreateCommandBand (HWND hWnd, BOOL fFirst) {
 		//        rbi[i].hbmBack = hBmp;
 		}
 	
-	
-    nBtnIndex = 1;
     cbr[0].cxRestored = 230;
     cbr[1].cxRestored = 210;
     cbr[1].fStyle = RBBS_FIXEDBMP;
@@ -538,12 +535,12 @@ int CreateCommandBand (HWND hWnd, BOOL fFirst) {
 	rbi[0].iImage = 0;
 	
 	// 2. Standard button band
-	rbi[nBtnIndex].fMask |= RBBIM_TEXT;
-	rbi[nBtnIndex].iImage = 1;
-	rbi[nBtnIndex].lpText = TEXT ("");
+	rbi[1].fMask |= RBBIM_TEXT;
+	rbi[1].iImage = 1;
+	rbi[1].lpText = TEXT ("");
 	// The next two parameters are initialized from saved data.
-	rbi[nBtnIndex].cx = cbr[1].cxRestored;
-	rbi[nBtnIndex].fStyle = cbr[1].fStyle;
+	rbi[1].cx = cbr[1].cxRestored;
+	rbi[1].fStyle = cbr[1].fStyle;
 	
 	// Add bands.
 	CommandBands_AddBands (hwndCB, hInst, 2, rbi);
@@ -552,7 +549,7 @@ int CreateCommandBand (HWND hWnd, BOOL fFirst) {
 	hwndBand = CommandBands_GetCommandBar (hwndCB, 0);
 	CommandBar_InsertMenubar (hwndBand, hInst, IDR_MENU1, 0);
 	// Add standard buttons to second band.
-	hwndBand = CommandBands_GetCommandBar (hwndCB, nBtnIndex);
+	hwndBand = CommandBands_GetCommandBar (hwndCB, 1);
 	// Insert buttons
 	CommandBar_AddBitmap (hwndBand, HINST_COMMCTRL, IDB_STD_SMALL_COLOR,
 		16, 0, 0);

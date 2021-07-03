@@ -154,7 +154,7 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 				lastSpacePointer+=10;
 				GetTextExtentPoint32(hdc, &segments[i].text[begin], lastSpacePointer-begin,&textMetrics);
 			}
-			while (textMetrics.cx>=rect.right)
+			while (textMetrics.cx>rect.right)
 			{
 				lastSpacePointer--;
 				GetTextExtentPoint32(hdc, &segments[i].text[begin], lastSpacePointer-begin,&textMetrics);
