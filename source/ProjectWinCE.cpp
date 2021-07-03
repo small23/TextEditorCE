@@ -105,28 +105,27 @@ LRESULT CharHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	HDC hdc; 
 	RECT rect;
 	wchar_t charCode =wParam;
-	hdc=GetDC(hWnd);
-	GetClientRect(hWnd, &rect);
+	hdc=GetDC(hwndMW);
+	GetClientRect(hwndMW, &rect);
 	rect.top=TOPHEADERDEADZONE;
 	rect.left=3;
 	rect.right-=SBWIDTH+3;
 	switch (charCode)
 		{
 		case '\b':
-			
+			TO_DeleteSymbol(segments,&carrage,hdc, rect);
 			break;
 		case '\t':
 			
 			break;
 		case L'\r':
-			TO_InsertSymbol(segments,0,9,charCode,hdc, rect);
+			//TO_InsertSymbol(segments,0,9,charCode,hdc, rect);
 			break;
 		case L'\n':
-			TO_InsertSymbol(segments,0,9,charCode,hdc, rect);
+			//TO_InsertSymbol(segments,0,9,charCode,hdc, rect);
 			break;
 		default:
-			TO_InsertSymbol(segments,0,carrage,charCode,hdc, rect);
-			carrage++;
+			TO_InsertSymbol(segments,&carrage,charCode,hdc, rect);
 			break;
 		}
 	tagPOINT coords;
@@ -134,8 +133,8 @@ LRESULT CharHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	int b=0; 
 	coords.x+=5;
 	SetCaretPos(coords.x, coords.y);
-	ReleaseDC(hWnd,hdc);
-	InvalidateRect(hWnd,NULL,TRUE);
+	ReleaseDC(hwndMW,hdc);
+	InvalidateRect(hwndMW,NULL,TRUE);
 	return 0;
 	}
 
@@ -149,7 +148,7 @@ LRESULT CommandHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	switch (wmId)
 		{
 		case ID_HELP_ABOUT:
-			{
+			{                                                                                                                                                
 			DialogBox(hInst, (LPCTSTR)IDD_DIALOG1, hWnd, (DLGPROC)About);
 			return 0;
 			}
@@ -183,7 +182,39 @@ LRESULT CommandHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 			{
 			DF_StringSizeTest(hWnd);
 			return 0;
-			}				
+			}
+		case 211: //STD_FILEOPEN
+			{
+			return 0;
+			}
+		case 212: //STD_FILESAVE
+			{
+			return 0;
+			}
+		case 213: //STD_CUT
+			{
+			return 0;
+			}
+		case 214: //STD_COPY
+			{
+			return 0;
+			}
+		case 215: //STD_PASTE
+			{
+			return 0;
+			}
+		case 216: //STD_UNDO
+			{
+			return 0;
+			}
+		case 217: //VIEW_LIST
+			{
+			return 0;
+			}
+		case 218: //STD_PROPERTIES
+			{
+			return 0;
+			}
 		}
 	return 0;
 	}

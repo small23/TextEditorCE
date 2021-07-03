@@ -110,19 +110,19 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 	int arrayCounter=0;
 	int lastSpacePointer;
 	int begin;
-	
+	//подсчет числа пробелов в сегменте - проходим весь сегмент
 	while (count<segments[i].length)
 	{
 		if (segments[i].text[count]==' ')
 		{
 			//lastSpacePointer=count;
-			segments[i].spacesPointer[spaceArrayCounter]=count;
+			segments[i].spacesPointer[spaceArrayCounter]=count; //¬ массив загон€ютс€ координаты пробелов
 			spaceArrayCounter++;
 		}
 		count++;
 	}
 	segments[i].spacesPointer[spaceArrayCounter]=count-1;
-	if (segments[i].length==0)
+	if (segments[i].length==0) //≈сли сегмент ничего не содержит - указываем что он содержит 1 строку дл€ отрисовки
 	{
 		segments[i].linesCounter=1;
 		segments[i].spacesPointer[0]=0;
@@ -133,15 +133,15 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 	int lastJ=0;
 	for (int j=0; j<spaceArrayCounter; j++)
 	{
-		while (j<spaceArrayCounter)
+		while (j<spaceArrayCounter) //ѕроходим по массиву пробелов определ€€ предельную длинну строки (сколько вместитс€ строк с пробелами)
 		{
-			lastSpacePointer=segments[i].spacesPointer[j];
+			lastSpacePointer=segments[i].spacesPointer[j]; //TODO!!!!!! ѕри сканировании не учитываетс€ последнее слово сегмента
 			GetTextExtentPoint32(hdc, &segments[i].text[begin], lastSpacePointer-begin,&textMetrics);
 			if (textMetrics.cx>=rect.right)
 				break;
 			j++;
 		}
-		if (j-lastJ==1)
+		if (j-lastJ<=1) //≈сли поместилось лишь одно слово - мы вылезли за пределы экрана, бьем слово на части
 		{
 			//ƒержал 4 строки на Athlon XP 5 строк с полной перерисовкой
 			//ѕосле отступа на 5 строк держал около 15
@@ -149,12 +149,12 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 			//ѕрогрессивна€ шкала отсупа, отсчет от начала до  конца строки - не смог повеситть
 			lastSpacePointer=begin;
 			textMetrics.cx=10;
-			while (textMetrics.cx<rect.right)
+			while (textMetrics.cx<rect.right) //ѕервый проход примерно определ€ем возможную длинну
 			{
 				lastSpacePointer+=10;
 				GetTextExtentPoint32(hdc, &segments[i].text[begin], lastSpacePointer-begin,&textMetrics);
 			}
-			while (textMetrics.cx>rect.right)
+			while (textMetrics.cx>rect.right) //¬торой проход уточн€ем длинну доступную дл€ отображени€
 			{
 				lastSpacePointer--;
 				GetTextExtentPoint32(hdc, &segments[i].text[begin], lastSpacePointer-begin,&textMetrics);
@@ -169,7 +169,7 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 			count++;
 			j--;
 		}
-		else if (j!=spaceArrayCounter)
+		else if (j!=spaceArrayCounter) //≈сли ограничени€ строки найдены - записываем координаты строки, ее длинну, счетчик линий повышаем
 		{
 			j--;
 			lastSpacePointer=segments[i].spacesPointer[j];
@@ -180,7 +180,7 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 			lastJ=j;
 			count++;
 		}
-		else
+		else //≈сли дошли до конца сегмента
 		{
 			lastSpacePointer=segments[i].spacesPointer[j];
 			segments[i].lineEnds[count]=lastSpacePointer+1;
@@ -193,15 +193,31 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 	}
 }
 
-void TO_InsertSymbol(SEGMENT* segments,int segmentNum, int currPos, wchar_t simbol, HDC hdc, RECT rect)
+void TO_InsertSymbol(SEGMENT* segments,TOCURSORPOS* carrage, wchar_t simbol, HDC hdc, RECT rect)
 {
-	if (segments[segmentNum].length>=segments[segmentNum].textArraySize)
+	if (segments[carrage->segment].length>=segments[carrage->segment].textArraySize)
 	{
-			segments[segmentNum].text=(wchar_t*)realloc(segments[segmentNum].text, segments[segmentNum].textArraySize*sizeof(wchar_t)+512*sizeof(wchar_t));
-			segments[segmentNum].textArraySize=segments[segmentNum].textArraySize+512;
+			segments[carrage->segment].text=(wchar_t*)realloc(segments[carrage->segment].text, segments[carrage->segment].textArraySize*sizeof(wchar_t)+512*sizeof(wchar_t));
+			segments[carrage->segment].textArraySize=segments[carrage->segment].textArraySize+512;
 	}
-	memmove(&segments[segmentNum].text[currPos+1],&segments[segmentNum].text[currPos], (segments[segmentNum].length-currPos)*sizeof(wchar_t));
-	segments[segmentNum].text[currPos]=simbol;
-	segments[segmentNum].length++;
-	TO_RecheckSpacesAndLines(segments, segmentNum, hdc, rect);
+	memmove(&segments[carrage->segment].text[carrage->position+1],&segments[carrage->segment].text[carrage->position], (segments[carrage->segment].length-carrage->position)*sizeof(wchar_t));
+	segments[carrage->segment].text[carrage->position]=simbol;
+	segments[carrage->segment].length++;
+	carrage->position++;
+	TO_RecheckSpacesAndLines(segments, carrage->segment, hdc, rect);
 }
+
+void TO_DeleteSymbol(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect)
+	{
+		if(carrage->position>0)
+		{
+			memmove(&segments[carrage->segment].text[carrage->position-1],&segments[carrage->segment].text[carrage->position], (segments[carrage->segment].length-carrage->position)*sizeof(wchar_t));
+			segments[carrage->segment].length--;
+			carrage->position--;
+		}
+		else
+		{
+
+		}
+		TO_RecheckSpacesAndLines(segments, carrage->segment, hdc, rect);
+	}

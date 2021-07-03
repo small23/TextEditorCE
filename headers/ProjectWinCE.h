@@ -31,12 +31,12 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 int oldPos;
 int segmentsCount=0;
-int carrage=0;
 
 COMMANDBANDSRESTOREINFO cbr[NUMBANDS];
 INT nBandOrder[NUMBANDS];
 
 SEGMENT *segments;
+TOCURSORPOS carrage;
 
 HINSTANCE			hInst;
 HWND				hwndCB;			// The command bar handle
