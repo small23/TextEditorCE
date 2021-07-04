@@ -8,7 +8,7 @@
 //
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPWSTR lpCmdLine, int nCmdShow) 
-	{
+{
     MSG msg;
 	
 	if(InitInstance(hInstance, hPrevInstance, lpCmdLine, nCmdShow)!=0)
@@ -18,199 +18,199 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
     while (GetMessage (&msg, NULL, 0, 0)) {
         TranslateMessage (&msg);
         DispatchMessage (&msg);
-		}
+	}
     // Instance cleanup
     return msg.wParam;
-	}
+}
 
 //======================================================================
 // MainWndProc - Callback function for application window
 //
 LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam, 
                               LPARAM lParam) 
-	{
+{
     switch (wMsg) 
+	{
+	case WM_CHAR:
 		{
-		case WM_CHAR:
-			{
 			return (CharHandler(hWnd, wMsg, wParam,lParam));
-			}
-		case WM_KEYDOWN:
-			{
+		}
+	case WM_KEYDOWN:
+		{
 			return (KeydownHandler(hWnd, wMsg, wParam,lParam));
-			}
-		case WM_COMMAND:
-			{
+		}
+	case WM_COMMAND:
+		{
 			return (CommandHandler(hWnd, wMsg, wParam,lParam));
-			}
-		case WM_CREATE:
-			{
+		}
+	case WM_CREATE:
+		{
 			
 			return 0;
-			}
-		case WM_VSCROLL:
-			{
+		}
+	case WM_VSCROLL:
+		{
 			return (VsScrollHandler(hWnd, wMsg, wParam,lParam));
-			}
-		case WM_PAINT:
-			{
+		}
+	case WM_PAINT:
+		{
 			return (PaintHandler(hWnd, wMsg, wParam,lParam));
-			}
-		case WM_DESTROY:
-			{
+		}
+	case WM_DESTROY:
+		{
 			PostQuitMessage (0);
 			break;
-			}
 		}
-    return DefWindowProc (hWnd, wMsg, wParam, lParam);
 	}
+    return DefWindowProc (hWnd, wMsg, wParam, lParam);
+}
 
 LRESULT KeydownHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
-	{
+{
 	switch (wParam) 
-		{
-		case VK_HOME:       // Home 
-			
-			break; 
-		case VK_END:        // End 
-			
-			break; 
-		case VK_PRIOR:      // Page Up 
-			
-			break; 
-		case VK_NEXT:       // Page Down 
-			
-			break; 
-		case VK_LEFT:       // Left arrow 
-			
-			break; 
-		case VK_RIGHT:      // Right arrow 
-			
-			break; 
-		case VK_UP:         // Up arrow 
-			
-			break; 
-		case VK_DOWN:       // Down arrow 
-			
-			break; 
-		case VK_DELETE:     // Delete 
-			
-			break; 
-		} 	
+	{
+	case VK_HOME:       // Home 
+		
+		break; 
+	case VK_END:        // End 
+		
+		break; 
+	case VK_PRIOR:      // Page Up 
+		
+		break; 
+	case VK_NEXT:       // Page Down 
+		
+		break; 
+	case VK_LEFT:       // Left arrow 
+		
+		break; 
+	case VK_RIGHT:      // Right arrow 
+		
+		break; 
+	case VK_UP:         // Up arrow 
+		
+		break; 
+	case VK_DOWN:       // Down arrow 
+		
+		break; 
+	case VK_DELETE:     // Delete 
+		
+		break; 
+	} 	
 	return 0; 
-	}
+}
 
 LRESULT CharHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
-	{
+{
 	HDC hdc; 
 	wchar_t charCode =wParam;
 	hdc=GetDC(hwndMW);
 	switch (charCode)
-		{
-		case '\b':
-			TO_DeleteSymbol(segments,&carrage,hdc, rect);
-			break;
-		case '\t':
-			
-			break;
-		case L'\r':
-			//TO_InsertSymbol(segments,0,9,charCode,hdc, rect);
-			break;
-		case L'\n':
-			//TO_InsertSymbol(segments,0,9,charCode,hdc, rect);
-			break;
-		default:
-			TO_InsertSymbol(segments,&carrage,charCode,hdc, rect);
-			break;
-		}
+	{
+	case '\b':
+		TO_DeleteSymbol(segments,&carrage,hdc, rect);
+		break;
+	case '\t':
+		
+		break;
+	case L'\r':
+		//TO_InsertSymbol(segments,0,9,charCode,hdc, rect);
+		break;
+	case L'\n':
+		//TO_InsertSymbol(segments,0,9,charCode,hdc, rect);
+		break;
+	default:
+		TO_InsertSymbol(segments,&carrage,charCode,hdc, rect);
+		break;
+	}
 	ReleaseDC(hwndMW,hdc);
 	InvalidateRect(hwndMW,NULL,TRUE);
 	return 0;
-	}
+}
 
 LRESULT CommandHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
-	{
+{
 	int wmId, wmEvent;
 	
 	wmId    = LOWORD(wParam); 
 	wmEvent = HIWORD(wParam); 
 	// Parse the menu selections:
 	switch (wmId)
-		{
-		case ID_HELP_ABOUT:
-			{                                                                                                                                                
+	{
+	case ID_HELP_ABOUT:
+		{                                                                                                                                                
 			DialogBox(hInst, (LPCTSTR)IDD_DIALOG1, hWnd, (DLGPROC)About);
 			return 0;
-			}
-		case ID_FILE_EXIT:
-			{
+		}
+	case ID_FILE_EXIT:
+		{
 			DestroyWindow(hWnd);
 			return 0;
-			}
-		case ID_TOOLS_DEBUG_SPEEDTEST2:
-			{
+		}
+	case ID_TOOLS_DEBUG_SPEEDTEST2:
+		{
 			DF_SpeedTest(hWnd, 2, segments, segmentsCount);
 			return 0;
-			}
-		case ID_TOOLS_DEBUG_SPEEDTEST10:
-			{
+		}
+	case ID_TOOLS_DEBUG_SPEEDTEST10:
+		{
 			DF_SpeedTest(hWnd, 10, segments, segmentsCount);
 			return 0;
-			}
-		case ID_FILE_OPEN:
-			{
+		}
+	case ID_FILE_OPEN:
+		{
 			TCHAR szFileName[MAX_PATH];
 			int length = GetFileName (hWnd, szFileName, MAX_PATH);
 			return 0;
-			}
-		case ID_TOOLS_DEBUG_MEMORYOPERATIONS:
-			{
+		}
+	case ID_TOOLS_DEBUG_MEMORYOPERATIONS:
+		{
 			DF_MemOperationsTest();
 			return 0;
-			}
-		case ID_TOOLS_DEBUG_STRINGCHECKLENGTHTEST:
-			{
+		}
+	case ID_TOOLS_DEBUG_STRINGCHECKLENGTHTEST:
+		{
 			DF_StringSizeTest(hWnd);
 			return 0;
-			}
-		case 211: //STD_FILEOPEN
-			{
-			return 0;
-			}
-		case 212: //STD_FILESAVE
-			{
-			return 0;
-			}
-		case 213: //STD_CUT
-			{
-			return 0;
-			}
-		case 214: //STD_COPY
-			{
-			return 0;
-			}
-		case 215: //STD_PASTE
-			{
-			return 0;
-			}
-		case 216: //STD_UNDO
-			{
-			return 0;
-			}
-		case 217: //VIEW_LIST
-			{
-			return 0;
-			}
-		case 218: //STD_PROPERTIES
-			{
-			return 0;
-			}
 		}
-	return 0;
+	case 211: //STD_FILEOPEN
+		{
+			return 0;
+		}
+	case 212: //STD_FILESAVE
+		{
+			return 0;
+		}
+	case 213: //STD_CUT
+		{
+			return 0;
+		}
+	case 214: //STD_COPY
+		{
+			return 0;
+		}
+	case 215: //STD_PASTE
+		{
+			return 0;
+		}
+	case 216: //STD_UNDO
+		{
+			return 0;
+		}
+	case 217: //VIEW_LIST
+		{
+			return 0;
+		}
+	case 218: //STD_PROPERTIES
+		{
+			return 0;
+		}
 	}
+	return 0;
+}
 
 LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
-	{
+{
 	SCROLLINFO si;
 	bool reRender=false;
 	
@@ -225,37 +225,37 @@ LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	sPosOrg = si.nPos;
 	// Act on the scroll code.
 	switch (LOWORD(wParam))
-		{
-		case SB_LINEUP: // Also SB_LINELEFT
-			sPos -= 1;
-			reRender = true;
-			break;
-			
-		case SB_LINEDOWN: // Also SB_LINERIGHT
-			sPos += 1;
-			reRender = true;
-			break;
-			
-		case SB_PAGEUP: // Also SB_PAGELEFT
-			sPos -= si.nPage;
-			reRender = true;
-			break;
-			
-		case SB_PAGEDOWN: // Also SB_PAGERIGHT
-			sPos += si.nPage;
-			reRender = true;
-			break;
-			
-		case SB_THUMBPOSITION:
-			sPos = HIWORD(wParam);
-			reRender = true;
-			break;
-			
-		case SB_THUMBTRACK:
-			sPos = HIWORD(wParam);
-			reRender = true;
-			break;
-		}
+	{
+	case SB_LINEUP: // Also SB_LINELEFT
+		sPos -= 1;
+		reRender = true;
+		break;
+		
+	case SB_LINEDOWN: // Also SB_LINERIGHT
+		sPos += 1;
+		reRender = true;
+		break;
+		
+	case SB_PAGEUP: // Also SB_PAGELEFT
+		sPos -= si.nPage;
+		reRender = true;
+		break;
+		
+	case SB_PAGEDOWN: // Also SB_PAGERIGHT
+		sPos += si.nPage;
+		reRender = true;
+		break;
+		
+	case SB_THUMBPOSITION:
+		sPos = HIWORD(wParam);
+		reRender = true;
+		break;
+		
+	case SB_THUMBTRACK:
+		sPos = HIWORD(wParam);
+		reRender = true;
+		break;
+	}
 	// Check range.
 	if (sPos < 0)
 		sPos = 0;
@@ -270,17 +270,17 @@ LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	
 	SetScrollInfo((HWND)lParam, SB_CTL, &si, TRUE);
 	if (reRender == true)
-		{
+	{
 		GF_DrawTextByLine(segments, segmentsCount, si.nPos, sPosOrg, 0, si.nPage, hwndMW, rect);
-		}
+	}
 	ShowCaret(hWnd);
 	return 0;
-	}
+}
 
 LRESULT PaintHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
-	{
+{
 	SCROLLINFO si;
-
+	
 	si.cbSize = sizeof (si);
 	si.fMask = SIF_POS;			
 	GetScrollInfo ((HWND)hwndSB, SB_CTL, &si);
@@ -288,11 +288,11 @@ LRESULT PaintHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	
 	GF_DrawTextAll(segments, segmentsCount, si.nPos, oldPos , hWnd,rect);
 	return 0;
-	}
+}
 
 int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				 LPWSTR lpCmdLine, int nCmdShow)
-	{
+{
 	WNDCLASS wc;
     HWND hWnd;
 	HICON hIcon;
@@ -356,12 +356,12 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         );
 	
 	if (!IsWindow (hwndSB)) return -3;
-
+	
 	GetClientRect (hWnd, &rect);
 	rect.top = TOPHEADERDEADZONE;
 	rect.left = 3;
 	rect.right -= SBWIDTH + 3;
-
+	
 	segments = new SEGMENT[50];
 	TO_CreateFont();
 	TO_GetTextSegments(hWnd, segments, &segmentsCount, rect);
@@ -373,16 +373,16 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     ShowWindow (hWnd, nCmdShow);
     UpdateWindow (hWnd);
 	return 0;
-	}
+}
 
 void Setup(HWND lParam)
-	{	
+{	
 	RECT rectSB;
 	int counterTotal=0;
 	for (int j=0; j<segmentsCount; j++)
-		{
+	{
 		counterTotal+=segments[j].linesCounter;
-		}
+	}
 	GetClientRect(lParam, &rectSB);
 	rectSB.top=TOPHEADERDEADZONE;
 	SCROLLINFO si;
@@ -398,56 +398,56 @@ void Setup(HWND lParam)
 	
 	si.nPage=0;
 	while (rectSB.top<rectSB.bottom-FONTHEIGHT)
-		{
+	{
 		si.nPage++;
 		rectSB.top+=FONTHEIGHT;
-		}
+	}
 	si.nMax=counterTotal-1;
 	
 	si.fMask = SIF_POS | SIF_PAGE | SIF_RANGE;
 	
 	SetScrollInfo ((HWND)lParam, SB_CTL, &si, TRUE);
-	}
+}
 
 // Mesage handler for the About box.
 LRESULT CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-	{
+{
 	RECT rt, rt1;
 	int DlgWidth, DlgHeight;	// dialog width and height in pixel units
 	int NewPosX, NewPosY;
 	
 	switch (message)
-		{
-		case WM_INITDIALOG:
-			// trying to center the About dialog
-			if (GetWindowRect(hDlg, &rt1)) {
-				GetClientRect(GetParent(hDlg), &rt);
-				DlgWidth	= rt1.right - rt1.left;
-				DlgHeight	= rt1.bottom - rt1.top ;
-				NewPosX		= (rt.right - rt.left - DlgWidth)/2;
-				NewPosY		= (rt.bottom - rt.top - DlgHeight)/2;
-				
-				// if the About box is larger than the physical screen 
-				if (NewPosX < 0) NewPosX = 0;
-				if (NewPosY < 0) NewPosY = 0;
-				SetWindowPos(hDlg, 0, NewPosX, NewPosY,
-					0, 0, SWP_NOZORDER | SWP_NOSIZE);
-				}
-			return TRUE;
+	{
+	case WM_INITDIALOG:
+		// trying to center the About dialog
+		if (GetWindowRect(hDlg, &rt1)) {
+			GetClientRect(GetParent(hDlg), &rt);
+			DlgWidth	= rt1.right - rt1.left;
+			DlgHeight	= rt1.bottom - rt1.top ;
+			NewPosX		= (rt.right - rt.left - DlgWidth)/2;
+			NewPosY		= (rt.bottom - rt.top - DlgHeight)/2;
 			
-		case WM_COMMAND:
-			if ((LOWORD(wParam) == IDOK) || (LOWORD(wParam) == IDCANCEL))
-				{
-				EndDialog(hDlg, LOWORD(wParam));
-				return TRUE;
-				}
-			break;
+			// if the About box is larger than the physical screen 
+			if (NewPosX < 0) NewPosX = 0;
+			if (NewPosY < 0) NewPosY = 0;
+			SetWindowPos(hDlg, 0, NewPosX, NewPosY,
+				0, 0, SWP_NOZORDER | SWP_NOSIZE);
 		}
-    return FALSE;
+		return TRUE;
+		
+	case WM_COMMAND:
+		if ((LOWORD(wParam) == IDOK) || (LOWORD(wParam) == IDCANCEL))
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return TRUE;
+		}
+		break;
 	}
+    return FALSE;
+}
 
 int GetFileName (HWND hWnd, LPTSTR szFileName, int nMax) 
-	{
+{
 	OPENFILENAME of;
 	const LPTSTR pszOpenFilter = TEXT ("All Documents (*.*)\0*.*\0\0");
 	
@@ -465,7 +465,7 @@ int GetFileName (HWND hWnd, LPTSTR szFileName, int nMax)
 		return lstrlen (szFileName);
 	else
 		return 0;
-	}
+}
 
 //----------------------------------------------------------------------
 // CreateCommandBand - Create a formatted command band control.
@@ -502,7 +502,7 @@ int CreateCommandBand (HWND hWnd, BOOL fFirst) {
 			/*RBBIM_BACKGROUND | */ RBBIM_STYLE;
 			rbi[i].wID = IDB_CMDBAND+i;
 		//        rbi[i].hbmBack = hBmp;
-		}
+	}
 	
     cbr[0].cxRestored = 230;
     cbr[1].cxRestored = 210;
@@ -547,13 +547,13 @@ int CreateCommandBand (HWND hWnd, BOOL fFirst) {
 		wsprintf (szTmp, TEXT ("Item %d"), i);
 		SendDlgItemMessageW(hwndBand, IDC_FONT, CB_INSERTSTRING, -1,
 			(LPARAM)szTmp);
-		}
+	}
 	
 	for (i = 0; i < 10; i++) {
 		wsprintf (szTmp, TEXT ("%d"), i);
 		SendDlgItemMessageW(hwndBand, IDC_FONTSIZE, CB_INSERTSTRING, -1,
 			(LPARAM)szTmp);
-		}
+	}
 	
 	SendDlgItemMessageW (hwndBand, IDC_FONT, CB_SETCURSEL, 0, 0);
 	SendDlgItemMessageW (hwndBand, IDC_FONTSIZE, CB_SETCURSEL, 0, 0);
@@ -564,7 +564,7 @@ int CreateCommandBand (HWND hWnd, BOOL fFirst) {
 		lStyle = SendMessage (hwndBand, TB_GETSTYLE, 0, 0);
 		lStyle |= TBSTYLE_TRANSPARENT;
 		SendMessage (hwndBand, TB_SETSTYLE, 0, lStyle);
-		}
+	}
 	
 	// Add exit button to command band.
 	CommandBands_AddAdornments (hwndCB, hInst, 0, NULL);
