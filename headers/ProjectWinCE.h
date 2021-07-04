@@ -36,7 +36,7 @@ COMMANDBANDSRESTOREINFO cbr[NUMBANDS];
 INT nBandOrder[NUMBANDS];
 
 SEGMENT *segments;
-TOCURSORPOS carrage={0,0,0,0,10};
+TOCURSORPOS carrage={0,0,0,0,16};
 RECT rect;
 
 

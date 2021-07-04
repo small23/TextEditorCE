@@ -15,9 +15,10 @@ typedef struct
 	int height;
 }TOCURSORPOS;
 
-void TO_GetTextSegments(HWND hWnd, SEGMENT* segments,int* segmentsCount, RECT rect);
+void TO_GetTextSegments(SEGMENT* segments,int* segmentsCount, HWND hWnd,  RECT rect);
 void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect);
 void TO_InsertSymbol(SEGMENT* segments, TOCURSORPOS* carrage, wchar_t simbol, HDC hdc, RECT rect);
 void TO_DeleteSymbol(SEGMENT* segments, TOCURSORPOS* carrage, HDC hdc, RECT rect);
+void TO_CalcCarragePos(SEGMENT* segments,TOCURSORPOS* carrage,HDC hdc, RECT rect);
 void TO_CreateFont();
 HFONT* TO_GetFonts(int *ArrayCounter);

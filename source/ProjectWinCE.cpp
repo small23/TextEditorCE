@@ -149,12 +149,12 @@ LRESULT CommandHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		}
 	case ID_TOOLS_DEBUG_SPEEDTEST2:
 		{
-			DF_SpeedTest(hWnd, 2, segments, segmentsCount);
+			DF_SpeedTest(hWnd, &carrage, 2, segments, segmentsCount);
 			return 0;
 		}
 	case ID_TOOLS_DEBUG_SPEEDTEST10:
 		{
-			DF_SpeedTest(hWnd, 10, segments, segmentsCount);
+			DF_SpeedTest(hWnd, &carrage, 10, segments, segmentsCount);
 			return 0;
 		}
 	case ID_FILE_OPEN:
@@ -271,7 +271,7 @@ LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	SetScrollInfo((HWND)lParam, SB_CTL, &si, TRUE);
 	if (reRender == true)
 	{
-		GF_DrawTextByLine(segments, segmentsCount, si.nPos, sPosOrg, 0, si.nPage, hwndMW, rect);
+		GF_DrawTextByLine(segments, &carrage,segmentsCount, si.nPos, sPosOrg, 0, si.nPage, hwndMW, rect);
 	}
 	ShowCaret(hWnd);
 	return 0;
@@ -286,7 +286,8 @@ LRESULT PaintHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	GetScrollInfo ((HWND)hwndSB, SB_CTL, &si);
 	oldPos=si.nPos;
 	
-	GF_DrawTextAll(segments, segmentsCount, si.nPos, oldPos , hWnd,rect);
+	GF_DrawTextAll(segments, &carrage, segmentsCount, si.nPos, oldPos , hwndMW,rect);
+	ShowCaret(hWnd);
 	return 0;
 }
 
@@ -361,14 +362,16 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	rect.top = TOPHEADERDEADZONE;
 	rect.left = 3;
 	rect.right -= SBWIDTH + 3;
-	
+
+	CreateCaret(hWnd, (HBITMAP) NULL, 2,16);
+
 	segments = new SEGMENT[50];
 	TO_CreateFont();
-	TO_GetTextSegments(hWnd, segments, &segmentsCount, rect);
+	TO_GetTextSegments( segments, &segmentsCount, hWnd, rect);
 	Setup(hwndSB);
 	
 	CreateCommandBand (hWnd, TRUE);
-	CreateCaret(hWnd, (HBITMAP) NULL, 2,10);
+	
 	
     ShowWindow (hWnd, nCmdShow);
     UpdateWindow (hWnd);

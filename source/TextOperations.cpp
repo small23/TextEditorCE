@@ -58,7 +58,7 @@ void TO_CreateFont()
 	fontsArrayCounter=1;
 }
 
-void TO_GetTextSegments(HWND hWnd, SEGMENT* segments, int* segmentsCount, RECT rect)
+void TO_GetTextSegments(SEGMENT* segments, int* segmentsCount, HWND hWnd, RECT rect)
 {
 	HDC hdc;
 
@@ -86,6 +86,7 @@ void TO_GetTextSegments(HWND hWnd, SEGMENT* segments, int* segmentsCount, RECT r
 		segments[i].linesLength=(int*)malloc(32*sizeof(int));
 		segments[i].linesLength[0]=0;
 		segments[i].lineEnds[0]=0;
+		segments[i].linesHeight=(int*)malloc(32*sizeof(int));
 		
 		memcpy(segments[i].text,texts[i],segments[i].length*sizeof(wchar_t));
 
@@ -121,6 +122,7 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 	{
 		segments[i].linesCounter=1;
 		segments[i].spacesPointer[0]=0;
+		segments[i].linesHeight[0]=16; //TODO Change to font used size
 		return;
 	}
 	segments[i].spacesPointer[spaceArrayCounter]=count-1;
@@ -133,7 +135,7 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 	{
 		while (j<spaceArrayCounter) //Проходим по массиву пробелов определяя предельную длинну строки (сколько вместится строк с пробелами)
 		{
-			lastSpacePointer=segments[i].spacesPointer[j]; //TODO!!!!!! При сканировании не учитывается последнее слово сегмента
+			lastSpacePointer=segments[i].spacesPointer[j];
 			GetTextExtentPoint32(hdc, &segments[i].text[begin], lastSpacePointer-begin,&textMetrics);
 			if (textMetrics.cx>=rect.right-rect.left)
 				break;
@@ -163,6 +165,7 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 			segments[i].lineEnds[count]=lastSpacePointer;
 			segments[i].linesLength[count-1]=lastSpacePointer-begin;
 			segments[i].linesCounter++;
+			segments[i].linesHeight[count-1]=textMetrics.cy;
 			begin=lastSpacePointer;
 			count++;
 			j--;
@@ -174,6 +177,7 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 			segments[i].lineEnds[count]=lastSpacePointer+1;
 			segments[i].linesLength[count-1]=lastSpacePointer-begin;
 			segments[i].linesCounter++;
+			segments[i].linesHeight[count-1]=textMetrics.cy;
 			begin=lastSpacePointer+1;
 			lastJ=j;
 			count++;
@@ -183,11 +187,23 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 			segments[i].lineEnds[count]=lastSpacePointer+1;
 			segments[i].linesLength[count-1]=lastSpacePointer-begin+1;
 			segments[i].linesCounter++;
-			begin=lastSpacePointer+1;
-			count++;
-			lastJ=j;
+			segments[i].linesHeight[count-1]=textMetrics.cy;
 		}
 	}
+}
+
+void TO_CalcCarragePos(SEGMENT* segments,TOCURSORPOS* carrage,HDC hdc, RECT rect)
+{
+	
+	SelectObject(hdc, fonts[0]);
+	int i=0;
+	while (segments[carrage->segment].lineEnds[i]<carrage->position)
+		i++;
+	SIZE textMetrics;
+	GetTextExtentPoint32(hdc, &segments[carrage->segment].text[segments[carrage->segment].lineEnds[i-1]], carrage->position - segments[carrage->segment].lineEnds[i-1],&textMetrics);
+	carrage->x=textMetrics.cx + rect.left;
+	carrage->height=textMetrics.cy;
+	carrage->lineLocation=i-1;
 }
 
 void TO_InsertSymbol(SEGMENT* segments,TOCURSORPOS* carrage, wchar_t simbol, HDC hdc, RECT rect)
@@ -202,19 +218,20 @@ void TO_InsertSymbol(SEGMENT* segments,TOCURSORPOS* carrage, wchar_t simbol, HDC
 	segments[carrage->segment].length++;
 	carrage->position++;
 	TO_RecheckSpacesAndLines(segments, carrage->segment, hdc, rect);
+	TO_CalcCarragePos(segments,carrage, hdc, rect);
 }
 
 void TO_DeleteSymbol(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect)
+{
+	if(carrage->position>0)
 	{
-		if(carrage->position>0)
-		{
-			memmove(&segments[carrage->segment].text[carrage->position-1],&segments[carrage->segment].text[carrage->position], (segments[carrage->segment].length-carrage->position)*sizeof(wchar_t));
-			segments[carrage->segment].length--;
-			carrage->position--;
-		}
-		else //Если переходим на новый сегмент
-		{
-
-		}
-		TO_RecheckSpacesAndLines(segments, carrage->segment, hdc, rect);
+		memmove(&segments[carrage->segment].text[carrage->position-1],&segments[carrage->segment].text[carrage->position], (segments[carrage->segment].length-carrage->position)*sizeof(wchar_t));
+		segments[carrage->segment].length--;
+		carrage->position--;
 	}
+	else //Если переходим на новый сегмент
+	{
+		
+	}
+	TO_RecheckSpacesAndLines(segments, carrage->segment, hdc, rect);
+}

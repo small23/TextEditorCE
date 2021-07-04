@@ -11,6 +11,7 @@ typedef struct
 	int* spacesPointer;
 	int spacesCounter;
 	int*  linesLength;
+	int*  linesHeight;
 	wchar_t* text;
 	int textArraySize;
 
