@@ -17,13 +17,15 @@ GFDRAWEDLINES* GF_GetDrawedLines()
 	return &drawedLines;
 }
 
-void GF_DrawTextByLineChoosenHDC(SEGMENT* segments, int segmentsCount, int a, int b , int reserverd, int pageSize, HDC hdc, RECT rect)
+void GF_DrawTextByLine(SEGMENT* segments, int segmentsCount, int newLine, int prevLine , int reserverd, int pageSize, HWND hWnd, RECT rect)
 {
+	HDC hdc = GetDC(hWnd);
+	
 	int currentLine=0;
 	int inSegmentLine=0;
 	int segmentPointer=0;
-
-	while (currentLine<a)
+	//HideCaret(hwndMW);
+	while (currentLine<newLine)
 	{
 		inSegmentLine++;
 		currentLine++;
@@ -35,14 +37,14 @@ void GF_DrawTextByLineChoosenHDC(SEGMENT* segments, int segmentsCount, int a, in
 	}
 	
 	RECT fillingRect = rect;
-	
+	fillingRect.right+=2;
 	
 	int lastHeight=rect.top;
 	//int lastCursorOnText=0;
 	
 	//SIZE textSize;
 	
-	int scrolledLines=a-b;
+	int scrolledLines=newLine-prevLine;
 	int rectTop=rect.top;
 	int counter=0;
 	int arraySize=0;
@@ -167,20 +169,26 @@ void GF_DrawTextByLineChoosenHDC(SEGMENT* segments, int segmentsCount, int a, in
 			fillingRect.bottom=fillingRect.top+FONTHEIGHT;
 		}
 	}
-	
+	ReleaseDC(hWnd, hdc);
+	tagPOINT coords;
+	GetCaretPos(&coords);
+	coords.x+=5;
+	SetCaretPos(coords.x, coords.y);
+	//ShowCaret(hWnd);
 }
 
-void GF_DrawTextByLine(SEGMENT* segments, int segmentsCount, int a, int b , int c, HWND hWnd, RECT rect)
+void GF_DrawTextAll(SEGMENT* segments, int segmentsCount, int newLine, int prevLine , HWND hWnd, RECT rect)
 {
 	PAINTSTRUCT ps;
     HDC hdc;
 
 	RECT fillingRect = rect;
+	fillingRect.right+=2;
 	int currentLine=0;
 	int inSegmentLine=0;
 	int segmentPointer=0;
 	
-	while (currentLine<a)
+	while (currentLine<newLine)
 	{
 		inSegmentLine++;
 		currentLine++;

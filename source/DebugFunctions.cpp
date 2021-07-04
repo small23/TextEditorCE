@@ -77,8 +77,6 @@ void DF_SpeedTest(HWND hWnd, int lineScrolls, SEGMENT* segments, int segmentsCou
 	__int64 drawTime=0;
 	__int64 updateTime=0;
 	
-	HDC hdc;
-	
 	start= DF_Milliseconds_now();
 	
 	int a=lineScrolls;
@@ -89,12 +87,7 @@ void DF_SpeedTest(HWND hWnd, int lineScrolls, SEGMENT* segments, int segmentsCou
 		part2=DF_Milliseconds_now();
 		for (int jj=0; jj<50; jj++)
 		{
-			hdc = GetDC(hWnd);
-			GetClientRect(hWnd, &rect);
-			rect.top=TOPHEADERDEADZONE;
-			GF_DrawTextByLineChoosenHDC(segments, segmentsCount, a, b , 0, 13,hdc, rect);
-			ReleaseDC(hWnd,hdc);
-			
+			GF_DrawTextByLine(segments, segmentsCount, a, b , 0, 13,hWnd, rect);
 			c=a;
 			a=b;
 			b=c;

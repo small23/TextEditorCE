@@ -103,13 +103,8 @@ LRESULT KeydownHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 LRESULT CharHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	{
 	HDC hdc; 
-	RECT rect;
 	wchar_t charCode =wParam;
 	hdc=GetDC(hwndMW);
-	GetClientRect(hwndMW, &rect);
-	rect.top=TOPHEADERDEADZONE;
-	rect.left=3;
-	rect.right-=SBWIDTH+3;
 	switch (charCode)
 		{
 		case '\b':
@@ -128,11 +123,6 @@ LRESULT CharHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 			TO_InsertSymbol(segments,&carrage,charCode,hdc, rect);
 			break;
 		}
-	tagPOINT coords;
-	GetCaretPos(&coords);
-	int b=0; 
-	coords.x+=5;
-	SetCaretPos(coords.x, coords.y);
 	ReleaseDC(hwndMW,hdc);
 	InvalidateRect(hwndMW,NULL,TRUE);
 	return 0;
@@ -221,9 +211,7 @@ LRESULT CommandHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	{
-	HDC hdc; 
 	SCROLLINFO si;
-	RECT rect;
 	bool reRender=false;
 	
 	int sPos, sPosOrg;
@@ -283,13 +271,7 @@ LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	SetScrollInfo((HWND)lParam, SB_CTL, &si, TRUE);
 	if (reRender == true)
 		{
-		hdc = GetDC(hWnd);
-		GetClientRect(hWnd, &rect);
-		rect.top = TOPHEADERDEADZONE;
-		rect.left = 3;
-		rect.right -= SBWIDTH;
-		GF_DrawTextByLineChoosenHDC(segments, segmentsCount, si.nPos, sPosOrg, 0, si.nPage, hdc, rect);
-		ReleaseDC(hWnd, hdc);
+		GF_DrawTextByLine(segments, segmentsCount, si.nPos, sPosOrg, 0, si.nPage, hwndMW, rect);
 		}
 	ShowCaret(hWnd);
 	return 0;
@@ -298,24 +280,13 @@ LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 LRESULT PaintHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	{
 	SCROLLINFO si;
-	RECT rect;
-	
+
 	si.cbSize = sizeof (si);
 	si.fMask = SIF_POS;			
 	GetScrollInfo ((HWND)hwndSB, SB_CTL, &si);
 	oldPos=si.nPos;
 	
-	GetClientRect(hWnd, &rect);
-	
-	rect.top=TOPHEADERDEADZONE;
-	RECT fillingRect=rect;
-	
-	fillingRect.bottom=FONTHEIGHT+TOPHEADERDEADZONE;
-	fillingRect.top=TOPHEADERDEADZONE;
-	fillingRect.left=3;
-	rect.right-=SBWIDTH;
-	
-	GF_DrawTextByLine(segments, segmentsCount, si.nPos, oldPos , 1, hWnd,rect);
+	GF_DrawTextAll(segments, segmentsCount, si.nPos, oldPos , hWnd,rect);
 	return 0;
 	}
 
@@ -326,7 +297,6 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     HWND hWnd;
 	HICON hIcon;
 	INITCOMMONCONTROLSEX icex;
-	RECT rect;
 	
 	hInst = hInstance;
     wc.style = 0;                             // Window style
@@ -386,16 +356,19 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         );
 	
 	if (!IsWindow (hwndSB)) return -3;
-	
+
+	GetClientRect (hWnd, &rect);
+	rect.top = TOPHEADERDEADZONE;
+	rect.left = 3;
+	rect.right -= SBWIDTH + 3;
+
 	segments = new SEGMENT[50];
 	TO_CreateFont();
-	TO_GetTextSegments(hWnd, segments, &segmentsCount);
+	TO_GetTextSegments(hWnd, segments, &segmentsCount, rect);
 	Setup(hwndSB);
 	
 	CreateCommandBand (hWnd, TRUE);
 	CreateCaret(hWnd, (HBITMAP) NULL, 2,10);
-	SetCaretPos(100,100);
-	ShowCaret(hWnd);
 	
     ShowWindow (hWnd, nCmdShow);
     UpdateWindow (hWnd);
@@ -404,14 +377,14 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 void Setup(HWND lParam)
 	{	
-	RECT rect;
+	RECT rectSB;
 	int counterTotal=0;
 	for (int j=0; j<segmentsCount; j++)
 		{
 		counterTotal+=segments[j].linesCounter;
 		}
-	GetClientRect(lParam, &rect);
-	rect.top=TOPHEADERDEADZONE;
+	GetClientRect(lParam, &rectSB);
+	rectSB.top=TOPHEADERDEADZONE;
 	SCROLLINFO si;
 	
 	// Get scroll bar position.
@@ -424,10 +397,10 @@ void Setup(HWND lParam)
 	si.cbSize = sizeof (si);
 	
 	si.nPage=0;
-	while (rect.top<rect.bottom-FONTHEIGHT)
+	while (rectSB.top<rectSB.bottom-FONTHEIGHT)
 		{
 		si.nPage++;
-		rect.top+=FONTHEIGHT;
+		rectSB.top+=FONTHEIGHT;
 		}
 	si.nMax=counterTotal-1;
 	

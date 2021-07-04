@@ -36,7 +36,9 @@ COMMANDBANDSRESTOREINFO cbr[NUMBANDS];
 INT nBandOrder[NUMBANDS];
 
 SEGMENT *segments;
-TOCURSORPOS carrage;
+TOCURSORPOS carrage={0,0,0,0,10};
+RECT rect;
+
 
 HINSTANCE			hInst;
 HWND				hwndCB;			// The command bar handle

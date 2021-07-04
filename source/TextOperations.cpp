@@ -58,14 +58,10 @@ void TO_CreateFont()
 	fontsArrayCounter=1;
 }
 
-void TO_GetTextSegments(HWND hWnd, SEGMENT* segments, int* segmentsCount)
+void TO_GetTextSegments(HWND hWnd, SEGMENT* segments, int* segmentsCount, RECT rect)
 {
-	RECT rect;
 	HDC hdc;
 
-	GetClientRect(hWnd, &rect);
-	rect.left=3;
-	rect.right-=SBWIDTH+rect.left+4;
 	hdc = GetDC(hWnd);
 
 	SelectObject(hdc, fonts[0]);
@@ -121,12 +117,14 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 		}
 		count++;
 	}
-	segments[i].spacesPointer[spaceArrayCounter]=count-1;
 	if (segments[i].length==0) //Если сегмент ничего не содержит - указываем что он содержит 1 строку для отрисовки
 	{
 		segments[i].linesCounter=1;
 		segments[i].spacesPointer[0]=0;
+		return;
 	}
+	segments[i].spacesPointer[spaceArrayCounter]=count-1;
+	spaceArrayCounter++;
 	begin=0;
 	count=1;
 	lastSpacePointer=0;
@@ -137,7 +135,7 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 		{
 			lastSpacePointer=segments[i].spacesPointer[j]; //TODO!!!!!! При сканировании не учитывается последнее слово сегмента
 			GetTextExtentPoint32(hdc, &segments[i].text[begin], lastSpacePointer-begin,&textMetrics);
-			if (textMetrics.cx>=rect.right)
+			if (textMetrics.cx>=rect.right-rect.left)
 				break;
 			j++;
 		}
@@ -182,7 +180,6 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 		}
 		else //Если дошли до конца сегмента
 		{
-			lastSpacePointer=segments[i].spacesPointer[j];
 			segments[i].lineEnds[count]=lastSpacePointer+1;
 			segments[i].linesLength[count-1]=lastSpacePointer-begin+1;
 			segments[i].linesCounter++;
@@ -215,7 +212,7 @@ void TO_DeleteSymbol(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect)
 			segments[carrage->segment].length--;
 			carrage->position--;
 		}
-		else
+		else //Если переходим на новый сегмент
 		{
 
 		}

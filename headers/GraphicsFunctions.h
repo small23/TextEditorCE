@@ -13,7 +13,7 @@ typedef struct
 
 }GFDRAWEDLINES;
 
-void GF_DrawTextByLine(SEGMENT* segments,int segmentCount, int a, int b , int c, HWND hWnd, RECT rect);
-void GF_DrawTextByLineChoosenHDC(SEGMENT* segments,int segmentCount, int newLinePointer, int oldLinePointer , int redrawAll, int pageSize, HDC hdc, RECT rect);
+void GF_DrawTextAll(SEGMENT* segments,int segmentCount, int newLinePointer, int oldLinePointer , HWND hWnd, RECT rect);
+void GF_DrawTextByLine(SEGMENT* segments,int segmentCount, int newLinePointer, int oldLinePointer , int redrawAll, int pageSize, HWND hWnd, RECT rect);
 void GF_DrawCursor(HDC hdc);
 GFDRAWEDLINES* GetDrawedLines();
