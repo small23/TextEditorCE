@@ -17,7 +17,7 @@ typedef struct
 GFDRAWEDLINES* GetDrawedLines();
 
 void GF_DrawTextAll(SEGMENT* segments, TOCURSORPOS* caretpos,int segmentCount, int newLinePointer, int oldLinePointer);
-void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* caretpos,int segmentCount, int newLinePointer, int oldLinePointer , int redrawAll, int pageSize);
+void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* caretpos,int segmentCount, int newLinePointer, int oldLinePointer);
 void GF_Init(HWND hWnd, RECT rect);
 void GF_SetCursorPos(SEGMENT* segments, TOCURSORPOS* caretpos, int segmentCount);
-int GF_CalcScrollDistance(SEGMENT* segments, int segmentsCount, int scrolledLines, int inSegmentLine, int segmentPointer);
+int GF_CalcScrollDistanceAndBorder(SEGMENT* segments, int* borderTop, int segmentsCount, int scrolledLines, int* inSegmentLine, int* segmentPointer);

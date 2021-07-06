@@ -277,7 +277,7 @@ LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	SetScrollInfo((HWND)lParam, SB_CTL, &si, TRUE);
 	if (reRender == true)
 	{
-		GF_DrawTextByLine(segments, &carrage,segmentsCount, si.nPos, sPosOrg, 0, si.nPage);
+		GF_DrawTextByLine(segments, &carrage,segmentsCount, si.nPos, sPosOrg);
 	}
 	return 0;
 }

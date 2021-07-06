@@ -82,7 +82,7 @@ void DF_SpeedTest(HWND hWnd, TOCURSORPOS* carrage, int lineScrolls, SEGMENT* seg
 		part2=DF_Milliseconds_now();
 		for (int jj=0; jj<50; jj++)
 		{
-			GF_DrawTextByLine(segments, carrage, segmentsCount, a, b , 0, 13);
+			GF_DrawTextByLine(segments, carrage, segmentsCount, a, b);
 			c=a;
 			a=b;
 			b=c;
@@ -98,7 +98,7 @@ void DF_SpeedTest(HWND hWnd, TOCURSORPOS* carrage, int lineScrolls, SEGMENT* seg
 	
 	int len=swprintf( buffer,L"Test 250 redraws, Total:%dms Update%dms ", timer, updateTime);
 	len+=swprintf( buffer+len,L"FPS: %f",(float)250/(float(timer)/1000.0));
-	
+	InvalidateRect(hWnd,NULL,TRUE);
 	MessageBox(NULL, buffer, TEXT("Results"), MB_OK);	
 }
 
