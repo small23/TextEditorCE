@@ -3,21 +3,94 @@
 #include "TextOperations.h"
 
 bool cursorHighLighted=false;
-
+bool carretIsShown=false; 
 
 GFDRAWEDLINES drawedLines = {0,0,0};
+HWND hWnd=NULL;
+RECT rect;
 
-void GF_DrawCursor(HDC hdc)
+void GF_Init(HWND hwnd, RECT rectangle)
 {
-	
+	rect=rectangle;
+	hWnd=hwnd;
+	CreateCaret(hWnd, (HBITMAP) NULL, 2,16);
 }
 
-GFDRAWEDLINES* GF_GetDrawedLines()
+void GF_SetCursorPos(SEGMENT* segments, TOCURSORPOS* caret, int segmentsCount)
 {
-	return &drawedLines;
+	if (caret->segment<drawedLines.segment)
+		return;
+	int inSegmentLine=drawedLines.lineBegin;
+	int segmentPointer=drawedLines.segment;
+	int rectTop=rect.top;
+	while (rectTop<rect.bottom && segmentPointer<segmentsCount) //Находим строку, которая рисуется самой последней на новом экране
+	{
+		if (inSegmentLine==caret->lineLocation && segmentPointer==caret->segment)
+		{
+			SetCaretPos(caret->x, rectTop);
+			if (!carretIsShown)
+			{
+				carretIsShown=true;
+				ShowCaret(hWnd);
+				return;
+			}
+		}
+		rectTop+=segments[segmentPointer].linesHeight[inSegmentLine];
+		inSegmentLine++;
+		if (inSegmentLine>=segments[segmentPointer].linesCounter)
+		{
+			inSegmentLine=0;
+			segmentPointer++;
+		}
+	}
+}
+int GF_CalcScrollDistance(SEGMENT* segments, int segmentsCount, int scrolledLines, int inSegmentLine, int segmentPointer)
+{
+	int scrollDistance=0;
+	if(scrolledLines<0)
+	{
+		while (scrolledLines<0)
+		{
+			scrollDistance+=segments[segmentPointer].linesHeight[inSegmentLine];
+			scrolledLines++;
+			inSegmentLine++;
+			if (inSegmentLine>=segments[segmentPointer].linesCounter)
+			{
+				inSegmentLine=0;
+				segmentPointer++;
+				if (segmentPointer>=segmentsCount)
+					return scrollDistance;
+			}
+		}
+	}
+	else
+	{
+		if (inSegmentLine<0)
+		{
+			inSegmentLine=segments[segmentPointer].linesCounter-1;
+			segmentPointer--;
+			if(segmentPointer<0)
+				return scrollDistance;
+		}
+		while (scrolledLines>0)
+		{
+			scrollDistance-=segments[segmentPointer].linesHeight[inSegmentLine];
+			scrolledLines--;
+			inSegmentLine--;
+			if (inSegmentLine<0)
+			{
+				inSegmentLine=segments[segmentPointer].linesCounter-1;
+				segmentPointer--;
+				if(segmentPointer<0)
+					return scrollDistance;
+			}
+		}
+	}
+
+	return scrollDistance;
 }
 
-void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* carrage,int segmentsCount, int newLine, int prevLine , int reserverd, int pageSize, HWND hWnd, RECT rect)
+void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* carrage,int segmentsCount, int newLine, int prevLine , int reserverd, int pageSize)
 {
 	int scrolledLines=newLine-prevLine;
 	if (scrolledLines==0)
@@ -26,7 +99,6 @@ void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* carrage,int segmentsCount
 	int currentLine=0;
 	int inSegmentLine=0;
 	int segmentPointer=0;
-	int scrollDistance=0;
 
 	while (currentLine<newLine)
 	{
@@ -37,49 +109,57 @@ void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* carrage,int segmentsCount
 			inSegmentLine=0;
 			segmentPointer++;
 		}
-		if (currentLine>prevLine)
-			scrollDistance+=segments[segmentPointer].linesHeight[inSegmentLine];
 	}
 	
+	int scrollDistance = GF_CalcScrollDistance(segments, segmentsCount, scrolledLines, inSegmentLine, segmentPointer);
+
 	RECT fillingRect = rect;
 	fillingRect.right+=2;
 	
 	int lastHeight=rect.top;
 	
-	HideCaret(hWnd);
+	if (carretIsShown)
+	{
+		carretIsShown=false;
+		HideCaret(hWnd);
+	}
 
-	HDC hdc = GetDC(hWnd);
+	HDC hdc = GetWindowDC(hWnd);
 	
 	int rectTop=rect.top;
-	int counter=0;
 	int arraySize=0;
-	int lastDrawedLineInSegment = 0;
-	int lastDrawedSegment = 0;
 	HFONT* fonts=TO_GetFonts(&arraySize);
 	SelectObject(hdc, fonts[0]);
 	
 	drawedLines.segment = segmentPointer;
 	drawedLines.lineBegin = inSegmentLine;
 	drawedLines.lineCount = 0;
-			
-	if (abs(scrolledLines)<pageSize)
+	
+	//RECT scrolledRect = rect;
+	//RECT clippedRect = rect;
+	
+	if (scrollDistance < rect.bottom-rect.top)
 	{	
 		
 		if (scrolledLines>0) //GoDown - render bottom strings
 		{
-			ScrollDC(hdc, 0, -scrollDistance, &rect,&rect, NULL,NULL); 
+			//scrolledRect.top+=scrollDistance;
+			//clippedRect.bottom-=scrollDistance;
+			//ScrollDC(hdc, 0, -scrollDistance, &scrolledRect,&clippedRect, NULL,NULL); 
+			ScrollDC(hdc, 0, scrollDistance, &rect,&rect, NULL,NULL);
 			int lastDrawedHeight=0;
-			
+			int lastDrawedLineInSegment = 0;
+	        int lastDrawedSegment = 0;
+
 			while (rectTop<rect.bottom && segmentPointer<segmentsCount) //Находим строку, которая рисуется самой последней на новом экране
 			{
-				if (rectTop + scrollDistance < rect.bottom)
+				if (rectTop - scrollDistance < rect.bottom)
 				{
 					lastDrawedSegment = segmentPointer;
 					lastDrawedLineInSegment=inSegmentLine;
 					lastDrawedHeight = rectTop;
 				}
 				rectTop+=segments[segmentPointer].linesHeight[inSegmentLine];
-				counter++;
 				inSegmentLine++;
 				currentLine++;
 				if (inSegmentLine>=segments[segmentPointer].linesCounter)
@@ -122,7 +202,10 @@ void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* carrage,int segmentsCount
 		else if (scrolledLines<0) //GoUp - render uppper strings
 		{
 			fillingRect.bottom=fillingRect.top+FONTHEIGHT;
-			ScrollDC(hdc, 0, -scrolledLines*FONTHEIGHT, &rect,&rect, NULL,NULL);
+			//scrolledRect.bottom-=-scrolledLines*FONTHEIGHT;
+			//clippedRect.top+=scrollDistance;
+			//ScrollDC(hdc, 0, -scrolledLines*FONTHEIGHT, &scrolledRect,&clippedRect, NULL,NULL);
+			ScrollDC(hdc, 0, scrollDistance, &rect,&rect, NULL,NULL);
 			while (scrolledLines<0)
 			{
 				
@@ -167,14 +250,22 @@ void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* carrage,int segmentsCount
 			fillingRect.bottom=fillingRect.top+FONTHEIGHT;
 		}
 	}
+
 	ReleaseDC(hWnd, hdc);
+	GF_SetCursorPos(segments, carrage, segmentsCount);
 }
 
-void GF_DrawTextAll(SEGMENT* segments, TOCURSORPOS* carrage, int segmentsCount, int newLine, int prevLine , HWND hWnd, RECT rect)
+void GF_DrawTextAll(SEGMENT* segments, TOCURSORPOS* carrage, int segmentsCount, int newLine, int prevLine)
 {
 	PAINTSTRUCT ps;
     HDC hdc;
-	HideCaret(hWnd);
+
+	if (carretIsShown)
+	{
+		carretIsShown=false;
+		HideCaret(hWnd);
+	}
+
 	RECT fillingRect = rect;
 	fillingRect.right+=2;
 	int currentLine=0;
@@ -203,12 +294,9 @@ void GF_DrawTextAll(SEGMENT* segments, TOCURSORPOS* carrage, int segmentsCount, 
 	SelectObject(hdc, fonts[0]);
 
 	int lastHeight=rect.top;
-	int lastCursorOnText=0;
 	
 	fillingRect.bottom=fillingRect.top+FONTHEIGHT;
 
-	//SIZE textSize;
-	
 	while (lastHeight<rect.bottom)
 	{
 		
@@ -222,10 +310,6 @@ void GF_DrawTextAll(SEGMENT* segments, TOCURSORPOS* carrage, int segmentsCount, 
 				inSegmentLine=0;
 				segmentPointer++;
 			}
-
-			if (newLine==carrage->lineLocation)
-				SetCaretPos(carrage->x, lastHeight);
-			
 			lastHeight+=FONTHEIGHT;
 			fillingRect.top=fillingRect.bottom;
 			fillingRect.bottom=fillingRect.top+FONTHEIGHT;
@@ -236,6 +320,5 @@ void GF_DrawTextAll(SEGMENT* segments, TOCURSORPOS* carrage, int segmentsCount, 
 	}
 	
 	EndPaint (hWnd, &ps); 
-	
-	ShowCaret(hWnd);
+	GF_SetCursorPos(segments, carrage, segmentsCount);
 }

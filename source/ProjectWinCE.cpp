@@ -103,6 +103,13 @@ LRESULT KeydownHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 LRESULT CharHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc; 
+	RECT rect;
+
+	GetClientRect (hWnd, &rect);
+	rect.top = TOPHEADERDEADZONE;
+	rect.left = 3;
+	rect.right -= SBWIDTH + 3;
+
 	wchar_t charCode =wParam;
 	hdc=GetDC(hwndMW);
 	switch (charCode)
@@ -215,7 +222,6 @@ LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	bool reRender=false;
 	
 	int sPos, sPosOrg;
-	HideCaret(hWnd);
 	// Get scroll bar position.
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_POS | SIF_PAGE | SIF_RANGE;
@@ -271,9 +277,8 @@ LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	SetScrollInfo((HWND)lParam, SB_CTL, &si, TRUE);
 	if (reRender == true)
 	{
-		GF_DrawTextByLine(segments, &carrage,segmentsCount, si.nPos, sPosOrg, 0, si.nPage, hwndMW, rect);
+		GF_DrawTextByLine(segments, &carrage,segmentsCount, si.nPos, sPosOrg, 0, si.nPage);
 	}
-	ShowCaret(hWnd);
 	return 0;
 }
 
@@ -286,8 +291,7 @@ LRESULT PaintHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	GetScrollInfo ((HWND)hwndSB, SB_CTL, &si);
 	oldPos=si.nPos;
 	
-	GF_DrawTextAll(segments, &carrage, segmentsCount, si.nPos, oldPos , hwndMW,rect);
-	ShowCaret(hWnd);
+	GF_DrawTextAll(segments, &carrage, segmentsCount, si.nPos, oldPos);
 	return 0;
 }
 
@@ -338,6 +342,7 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	
 	hwndMW=hWnd;
 	
+	RECT rect;
 	GetClientRect (hWnd, &rect);
 	
 	hwndSB = CreateWindowEx( 
@@ -362,8 +367,8 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	rect.top = TOPHEADERDEADZONE;
 	rect.left = 3;
 	rect.right -= SBWIDTH + 3;
-
-	CreateCaret(hWnd, (HBITMAP) NULL, 2,16);
+	
+	GF_Init(hwndMW, rect);
 
 	segments = new SEGMENT[50];
 	TO_CreateFont();
@@ -371,7 +376,6 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	Setup(hwndSB);
 	
 	CreateCommandBand (hWnd, TRUE);
-	
 	
     ShowWindow (hWnd, nCmdShow);
     UpdateWindow (hWnd);

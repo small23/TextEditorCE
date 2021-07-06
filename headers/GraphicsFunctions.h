@@ -11,10 +11,13 @@ typedef struct
 	int segment;
 	int lineBegin;
 	int lineCount;
-
+	int totalCount;
 }GFDRAWEDLINES;
 
-void GF_DrawTextAll(SEGMENT* segments, TOCURSORPOS* carrage,int segmentCount, int newLinePointer, int oldLinePointer , HWND hWnd, RECT rect);
-void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* carrage,int segmentCount, int newLinePointer, int oldLinePointer , int redrawAll, int pageSize, HWND hWnd, RECT rect);
-void GF_DrawCursor(HDC hdc);
 GFDRAWEDLINES* GetDrawedLines();
+
+void GF_DrawTextAll(SEGMENT* segments, TOCURSORPOS* caretpos,int segmentCount, int newLinePointer, int oldLinePointer);
+void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* caretpos,int segmentCount, int newLinePointer, int oldLinePointer , int redrawAll, int pageSize);
+void GF_Init(HWND hWnd, RECT rect);
+void GF_SetCursorPos(SEGMENT* segments, TOCURSORPOS* caretpos, int segmentCount);
+int GF_CalcScrollDistance(SEGMENT* segments, int segmentsCount, int scrolledLines, int inSegmentLine, int segmentPointer);

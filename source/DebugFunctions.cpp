@@ -65,11 +65,6 @@ void DF_SpeedTest(HWND hWnd, TOCURSORPOS* carrage, int lineScrolls, SEGMENT* seg
 	si.fMask = SIF_POS | SIF_PAGE | SIF_RANGE;
 	
 	int ans=GetScrollInfo (hWnd, SB_CTL, &si);
-	RECT rect;
-	
-	GetClientRect(hWnd, &rect);
-	rect.right-=SBWIDTH;
-	rect.top=TOPHEADERDEADZONE;
 	__int64 stop=0;
 	__int64 start=0;
 	__int64 part2=0;
@@ -87,7 +82,7 @@ void DF_SpeedTest(HWND hWnd, TOCURSORPOS* carrage, int lineScrolls, SEGMENT* seg
 		part2=DF_Milliseconds_now();
 		for (int jj=0; jj<50; jj++)
 		{
-			GF_DrawTextByLine(segments, carrage, segmentsCount, a, b , 0, 13,hWnd, rect);
+			GF_DrawTextByLine(segments, carrage, segmentsCount, a, b , 0, 13);
 			c=a;
 			a=b;
 			b=c;
@@ -102,7 +97,7 @@ void DF_SpeedTest(HWND hWnd, TOCURSORPOS* carrage, int lineScrolls, SEGMENT* seg
 	wchar_t  buffer[200];
 	
 	int len=swprintf( buffer,L"Test 250 redraws, Total:%dms Update%dms ", timer, updateTime);
-	len+=swprintf( buffer+len,L"Update rectangle: top:%dpx left:%dpx right:%dpx bottom:%dpx FPS: %f", rect.top, rect.left, rect.right, rect.bottom, (float)250/(float(timer)/1000.0));
+	len+=swprintf( buffer+len,L"FPS: %f",(float)250/(float(timer)/1000.0));
 	
 	MessageBox(NULL, buffer, TEXT("Results"), MB_OK);	
 }

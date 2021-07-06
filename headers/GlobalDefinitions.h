@@ -11,4 +11,4 @@
 #define  IDC_EDITCTL         12
 #define  NUMBANDS            2
 #define  IDC_FONT            13   
-#define  IDC_FONTSIZE        14    
+#define  IDC_FONTSIZE        14   

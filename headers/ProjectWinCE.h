@@ -37,7 +37,6 @@ INT nBandOrder[NUMBANDS];
 
 SEGMENT *segments;
 TOCURSORPOS carrage={0,0,0,0,16};
-RECT rect;
 
 
 HINSTANCE			hInst;

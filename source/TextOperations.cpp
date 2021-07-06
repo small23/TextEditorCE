@@ -16,22 +16,7 @@ HFONT* fonts=NULL;
 TEXTMETRIC* fontsMetrics=NULL;
 int fontsArraySize=0;
 int fontsArrayCounter=0;
-TOCURSORPOS cursorPosition={0,0};
 
-TOCURSORPOS* TO_GetCursorPosition()
-{
-	return &cursorPosition;
-}
-
-void TO_SetCursorPositionByTap(int x, int y)
-{
-	
-}
-
-void TO_SetCursorPositionByShift(int shift)
-{
-	
-}
 
 HFONT* TO_GetFonts(int *ArrayCounter)
 {
@@ -196,9 +181,11 @@ void TO_CalcCarragePos(SEGMENT* segments,TOCURSORPOS* carrage,HDC hdc, RECT rect
 {
 	
 	SelectObject(hdc, fonts[0]);
-	int i=0;
+	int i=1;
 	while (segments[carrage->segment].lineEnds[i]<carrage->position)
+	{
 		i++;
+	}
 	SIZE textMetrics;
 	GetTextExtentPoint32(hdc, &segments[carrage->segment].text[segments[carrage->segment].lineEnds[i-1]], carrage->position - segments[carrage->segment].lineEnds[i-1],&textMetrics);
 	carrage->x=textMetrics.cx + rect.left;
@@ -234,4 +221,5 @@ void TO_DeleteSymbol(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect)
 		
 	}
 	TO_RecheckSpacesAndLines(segments, carrage->segment, hdc, rect);
+	TO_CalcCarragePos(segments,carrage, hdc, rect);
 }
