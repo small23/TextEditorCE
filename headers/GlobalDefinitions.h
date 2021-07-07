@@ -5,7 +5,6 @@
 #define TOPHEADERDEADZONE 24
 #define SBWIDTH 15
 #define SYMBOLS_ARRAY_STEP_SIZE 256
-#define FONTHEIGHT 16
 #define dim(x) (sizeof(x) / sizeof(x[0]))
 #define  IDC_CMDBAND         1                  // Command band ID
 #define  IDC_EDITCTL         12

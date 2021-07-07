@@ -28,7 +28,7 @@ void TO_CreateFont()
 {
 	LOGFONT lf;
 	memset(&lf, 0, sizeof(LOGFONT));          // Clear out structure.
-	lf.lfHeight = FONTHEIGHT;                         // Request a 12-pixel-height
+	lf.lfHeight = 16;                         // Request a 12-pixel-height
 	lf.lfItalic=0;
 	lf.lfUnderline=0;
 	lstrcpy(lf.lfFaceName, _T("Arial"));

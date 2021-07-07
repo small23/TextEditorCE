@@ -114,10 +114,10 @@ LRESULT CharHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	hdc=GetDC(hwndMW);
 	switch (charCode)
 	{
-	case '\b':
+	case L'\b':
 		TO_DeleteSymbol(segments,&carrage,hdc, rect);
 		break;
-	case '\t':
+	case L'\t':
 		
 		break;
 	case L'\r':
@@ -373,25 +373,22 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	segments = new SEGMENT[50];
 	TO_CreateFont();
 	TO_GetTextSegments( segments, &segmentsCount, hWnd, rect);
-	Setup(hwndSB);
 	
 	CreateCommandBand (hWnd, TRUE);
 	
     ShowWindow (hWnd, nCmdShow);
     UpdateWindow (hWnd);
+	Setup(hwndSB);
 	return 0;
 }
 
 void Setup(HWND lParam)
 {	
-	RECT rectSB;
 	int counterTotal=0;
 	for (int j=0; j<segmentsCount; j++)
 	{
 		counterTotal+=segments[j].linesCounter;
 	}
-	GetClientRect(lParam, &rectSB);
-	rectSB.top=TOPHEADERDEADZONE;
 	SCROLLINFO si;
 	
 	// Get scroll bar position.
@@ -403,12 +400,8 @@ void Setup(HWND lParam)
 	// Update scroll bar position.
 	si.cbSize = sizeof (si);
 	
-	si.nPage=0;
-	while (rectSB.top<rectSB.bottom-FONTHEIGHT)
-	{
-		si.nPage++;
-		rectSB.top+=FONTHEIGHT;
-	}
+	si.nPage=GF_GetDrawedLines()->linesDrawed;
+
 	si.nMax=counterTotal-1;
 	
 	si.fMask = SIF_POS | SIF_PAGE | SIF_RANGE;
