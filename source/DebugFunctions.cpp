@@ -82,7 +82,7 @@ void DF_SpeedTest(HWND hWnd, TOCURSORPOS* carrage, int lineScrolls, SEGMENT* seg
 		part2=DF_Milliseconds_now();
 		for (int jj=0; jj<50; jj++)
 		{
-			GF_DrawTextByLine(segments, carrage, segmentsCount, a, b);
+			GF_DrawTextByLine(segments, carrage, segmentsCount, a);
 			c=a;
 			a=b;
 			b=c;

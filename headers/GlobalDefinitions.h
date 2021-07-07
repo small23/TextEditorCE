@@ -3,7 +3,8 @@
 #define SCROLLBARID 100
 #define STRINGLENGTH 92
 #define TOPHEADERDEADZONE 24
-#define SBWIDTH 15
+#define SBWIDTH 20
+#define TEXTBORDERS 5
 #define SYMBOLS_ARRAY_STEP_SIZE 256
 #define dim(x) (sizeof(x) / sizeof(x[0]))
 #define  IDC_CMDBAND         1                  // Command band ID

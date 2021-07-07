@@ -17,6 +17,10 @@ GFDRAWEDLINES drawedLines = {0,0,0,0};
 HWND hWnd=NULL;
 RECT rect;
 
+RECT GF_GetRect()
+{
+	return rect;
+}
 
 GFDRAWEDLINES* GF_GetDrawedLines()
 {
@@ -30,9 +34,14 @@ void GF_Init(HWND hwnd, RECT rectangle)
 	CreateCaret(hWnd, (HBITMAP) NULL, 2,16);
 }
 
-void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* carrage,int segmentsCount, int newLine, int prevLine)
+void GF_RectChange(RECT rectangle)
 {
-	int scrolledLines=newLine-prevLine;
+	rect=rectangle;
+}
+
+void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* carrage,int segmentsCount, int newLine)
+{
+	int scrolledLines=newLine-drawedLines.totalCount;
 	int inSegmentLine=0;
 	int segmentPointer=0;
 	int scrollDistance;
@@ -86,7 +95,7 @@ void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* carrage,int segmentsCount
 	_GF_SetCursorPos(segments, carrage, segmentsCount);
 }
 
-void GF_DrawTextAll(SEGMENT* segments, TOCURSORPOS* carrage, int segmentsCount, int newLine, int prevLine)
+void GF_DrawTextAll(SEGMENT* segments, TOCURSORPOS* carrage, int segmentsCount, int newLine)
 {
 	PAINTSTRUCT ps;
     HDC hdc;
