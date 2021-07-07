@@ -61,6 +61,29 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 			PostQuitMessage (0);
 			break;
 		}
+	case WM_NOTIFY:
+		{
+			LPNMHDR pnmh;
+			
+			pnmh=(LPNMHDR)lParam;
+			switch (pnmh->code) 
+			{
+			case RBN_HEIGHTCHANGE:
+				{
+					RECT rectRebar, rectMW, rectSB;
+					GetClientRect (hwndCB, &rectRebar);
+					rectMW = GF_GetRect();
+					rectMW.top=rectRebar.bottom;
+					GF_RectChange(rectMW);
+					GetClientRect (hwndSB, &rectSB);
+					GetClientRect (hwndMW, &rectMW);
+					SetWindowPos(hwndSB, HWND_TOP, rectMW.right-SBWIDTH, rectRebar.bottom, SBWIDTH, rectMW.bottom-rectRebar.bottom, 0);
+					InvalidateRect(hwndSB,NULL,TRUE);
+					InvalidateRect(hwndMW,NULL,TRUE);
+					break;
+				}
+			}
+		}
 	}
     return DefWindowProc (hWnd, wMsg, wParam, lParam);
 }
@@ -102,33 +125,36 @@ LRESULT KeydownHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 LRESULT CharHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 {
-	HDC hdc; 
-	RECT rect;
-
-	GetClientRect (hWnd, &rect);
-	rect.top = TOPHEADERDEADZONE;
-	rect.left = 3;
-	rect.right -= SBWIDTH + 3;
-
+	HDC hdc;
 	wchar_t charCode =wParam;
+	
 	hdc=GetDC(hwndMW);
 	switch (charCode)
 	{
 	case L'\b':
-		TO_DeleteSymbol(segments,&carrage,hdc, rect);
-		break;
+		{
+			TO_DeleteSymbol(segments,&carrage,hdc, GF_GetRect());
+			break;
+		}
 	case L'\t':
-		
-		break;
+		{
+			break;
+		}
 	case L'\r':
-		//TO_InsertSymbol(segments,0,9,charCode,hdc, rect);
-		break;
+		{
+			//TO_InsertSymbol(segments,0,9,charCode,hdc, GF_GetRect());
+			break;
+		}
 	case L'\n':
-		//TO_InsertSymbol(segments,0,9,charCode,hdc, rect);
-		break;
+		{
+			//TO_InsertSymbol(segments,0,9,charCode,hdc, GF_GetRect());
+			break;
+		}
 	default:
-		TO_InsertSymbol(segments,&carrage,charCode,hdc, rect);
-		break;
+		{
+			TO_InsertSymbol(segments,&carrage,charCode,hdc, GF_GetRect());
+			break;
+		}
 	}
 	ReleaseDC(hwndMW,hdc);
 	InvalidateRect(hwndMW,NULL,TRUE);
@@ -142,143 +168,160 @@ LRESULT CommandHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	wmId    = LOWORD(wParam); 
 	wmEvent = HIWORD(wParam); 
 	// Parse the menu selections:
-	switch (wmId)
+	if (wmEvent==0)
 	{
-	case ID_HELP_ABOUT:
-		{                                                                                                                                                
-			DialogBox(hInst, (LPCTSTR)IDD_DIALOG1, hWnd, (DLGPROC)About);
-			return 0;
-		}
-	case ID_FILE_EXIT:
+		switch (wmId)
 		{
-			DestroyWindow(hWnd);
-			return 0;
-		}
-	case ID_TOOLS_DEBUG_SPEEDTEST2:
-		{
-			DF_SpeedTest(hWnd, &carrage, 2, segments, segmentsCount);
-			return 0;
-		}
-	case ID_TOOLS_DEBUG_SPEEDTEST10:
-		{
-			DF_SpeedTest(hWnd, &carrage, 10, segments, segmentsCount);
-			return 0;
-		}
-	case ID_FILE_OPEN:
-		{
-			TCHAR szFileName[MAX_PATH];
-			int length = GetFileName (hWnd, szFileName, MAX_PATH);
-			return 0;
-		}
-	case ID_TOOLS_DEBUG_MEMORYOPERATIONS:
-		{
-			DF_MemOperationsTest();
-			return 0;
-		}
-	case ID_TOOLS_DEBUG_STRINGCHECKLENGTHTEST:
-		{
-			DF_StringSizeTest(hWnd);
-			return 0;
-		}
-	case 211: //STD_FILEOPEN
-		{
-			return 0;
-		}
-	case 212: //STD_FILESAVE
-		{
-			return 0;
-		}
-	case 213: //STD_CUT
-		{
-			return 0;
-		}
-	case 214: //STD_COPY
-		{
-			return 0;
-		}
-	case 215: //STD_PASTE
-		{
-			return 0;
-		}
-	case 216: //STD_UNDO
-		{
-			return 0;
-		}
-	case 217: //VIEW_LIST
-		{
-			return 0;
-		}
-	case 218: //STD_PROPERTIES
-		{
-			return 0;
+		case ID_HELP_ABOUT:
+			{                                                                                                                                                
+				DialogBox(hInst, (LPCTSTR)IDD_DIALOG1, hWnd, (DLGPROC)About);
+				return 0;
+			}
+		case ID_FILE_EXIT:
+			{
+				DestroyWindow(hWnd);
+				return 0;
+			}
+		case ID_TOOLS_DEBUG_SPEEDTEST2:
+			{
+				DF_SpeedTest(hWnd, &carrage, 2, segments, segmentsCount);
+				return 0;
+			}
+		case ID_TOOLS_DEBUG_SPEEDTEST10:
+			{
+				DF_SpeedTest(hWnd, &carrage, 10, segments, segmentsCount);
+				return 0;
+			}
+		case ID_FILE_OPEN:
+			{
+				TCHAR szFileName[MAX_PATH];
+				int length = GetFileName (hWnd, szFileName, MAX_PATH);
+				return 0;
+			}
+		case ID_TOOLS_DEBUG_MEMORYOPERATIONS:
+			{
+				DF_MemOperationsTest();
+				return 0;
+			}
+		case ID_TOOLS_DEBUG_STRINGCHECKLENGTHTEST:
+			{
+				DF_StringSizeTest(hWnd);
+				return 0;
+			}
+		case 211: //STD_FILEOPEN
+			{
+				return 0;
+			}
+		case 212: //STD_FILESAVE
+			{
+				return 0;
+			}
+		case 213: //STD_CUT
+			{
+				return 0;
+			}
+		case 214: //STD_COPY
+			{
+				return 0;
+			}
+		case 215: //STD_PASTE
+			{
+				return 0;
+			}
+		case 216: //STD_UNDO
+			{
+				return 0;
+			}
+		case 217: //VIEW_LIST
+			{
+				return 0;
+			}
+		case 218: //STD_PROPERTIES
+			{
+				return 0;
+			}
 		}
 	}
+	else
+	{
+		switch (wmEvent)
+		{
+		case CBN_SELCHANGE:
+			{
+				int ItemIndex = SendMessage((HWND) lParam, (UINT) CB_GETCURSEL,
+					(WPARAM) 0, (LPARAM) 0);
+				if (lParam == hwndFONT)
+				{
+
+				}
+				else if (lparam == hwndFONTSIZE)
+				{
+
+
+				}
+				TCHAR ListItem[64];
+				(TCHAR) SendMessage((HWND) lParam, (UINT) CB_GETLBTEXT,
+					(WPARAM) ItemIndex, (LPARAM) ListItem);
+				MessageBox(hWnd, (LPCWSTR) ListItem, TEXT("Item Selected"), MB_OK);
+				break;
+			}
+		}
+	}
+	
 	return 0;
 }
 
 LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 {
 	SCROLLINFO si;
-	bool reRender=false;
 	
-	int sPos, sPosOrg;
 	// Get scroll bar position.
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_POS | SIF_PAGE | SIF_RANGE;
 	
 	GetScrollInfo((HWND)lParam, SB_CTL, &si);
-	sPos = si.nPos;
-	sPosOrg = si.nPos;
 	// Act on the scroll code.
 	switch (LOWORD(wParam))
 	{
 	case SB_LINEUP: // Also SB_LINELEFT
-		sPos -= 1;
-		reRender = true;
+		si.nPos -= 1;
 		break;
 		
 	case SB_LINEDOWN: // Also SB_LINERIGHT
-		sPos += 1;
-		reRender = true;
+		si.nPos += 1;
 		break;
 		
 	case SB_PAGEUP: // Also SB_PAGELEFT
-		sPos -= si.nPage;
-		reRender = true;
+		si.nPos -= si.nPage;
 		break;
 		
 	case SB_PAGEDOWN: // Also SB_PAGERIGHT
-		sPos += si.nPage;
-		reRender = true;
+		si.nPos += si.nPage;
 		break;
 		
 	case SB_THUMBPOSITION:
-		sPos = HIWORD(wParam);
-		reRender = true;
+		si.nPos = HIWORD(wParam);
 		break;
 		
 	case SB_THUMBTRACK:
-		sPos = HIWORD(wParam);
-		reRender = true;
+		si.nPos = HIWORD(wParam);
 		break;
 	}
 	// Check range.
-	if (sPos < 0)
-		sPos = 0;
-	if (sPos > si.nMax - si.nPage + 1)
-		sPos = si.nMax - si.nPage + 1;
+	if (si.nPos < 0)
+		si.nPos = 0;
+	if (si.nPos > si.nMax - si.nPage + 1)
+		si.nPos = si.nMax - si.nPage + 1;
 	
 	// Update scroll bar position.
 	si.cbSize = sizeof(si);
-	si.nPos = sPos;
 	
 	si.fMask = SIF_POS | SIF_PAGE | SIF_RANGE;
 	
 	SetScrollInfo((HWND)lParam, SB_CTL, &si, TRUE);
-	if (reRender == true)
-	{
-		GF_DrawTextByLine(segments, &carrage,segmentsCount, si.nPos, sPosOrg);
-	}
+
+	GF_DrawTextByLine(segments, &carrage,segmentsCount, si.nPos);
+
 	return 0;
 }
 
@@ -289,9 +332,8 @@ LRESULT PaintHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	si.cbSize = sizeof (si);
 	si.fMask = SIF_POS;			
 	GetScrollInfo ((HWND)hwndSB, SB_CTL, &si);
-	oldPos=si.nPos;
 	
-	GF_DrawTextAll(segments, &carrage, segmentsCount, si.nPos, oldPos);
+	GF_DrawTextAll(segments, &carrage, segmentsCount, si.nPos);
 	return 0;
 }
 
@@ -302,9 +344,12 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     HWND hWnd;
 	HICON hIcon;
 	INITCOMMONCONTROLSEX icex;
+	RECT rect;
+	
 	
 	hInst = hInstance;
-    wc.style = 0;                             // Window style
+    
+	wc.style = 0;                             // Window style
     wc.lpfnWndProc = MainWndProc;             // Callback function
     wc.cbClsExtra = 0;                        // Extra class data
     wc.cbWndExtra = 0;                        // Extra window data
@@ -336,14 +381,14 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		hInstance,          // Application instance
 		NULL);              // Pointer to create parameters
     if (!IsWindow (hWnd)) return -2; 
-	
+
 	hIcon=LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
 	int test = SendMessage(hWnd, WM_SETICON, FALSE, (LPARAM)hIcon);
 	
-	hwndMW=hWnd;
 	
-	RECT rect;
 	GetClientRect (hWnd, &rect);
+
+	hwndMW=hWnd;
 	
 	hwndSB = CreateWindowEx( 
 		0,                      // no extended styles 
@@ -353,7 +398,7 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		| SBS_VERT,				// horizontal scroll bar style 
 		rect.right-SBWIDTH,     // horizontal position 
 		TOPHEADERDEADZONE,		// vertical position 
-		rect.right,             // width of the scroll bar 
+		SBWIDTH,             // width of the scroll bar 
 		rect.bottom-TOPHEADERDEADZONE, // height of the scroll bar
 		hWnd,					// handle to main window 
 		(HMENU) NULL,           // no menu 
@@ -365,8 +410,8 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	
 	GetClientRect (hWnd, &rect);
 	rect.top = TOPHEADERDEADZONE;
-	rect.left = 3;
-	rect.right -= SBWIDTH + 3;
+	rect.left = TEXTBORDERS;
+	rect.right -= SBWIDTH + TEXTBORDERS;
 	
 	GF_Init(hwndMW, rect);
 
@@ -382,7 +427,7 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	return 0;
 }
 
-void Setup(HWND lParam)
+void Setup(HWND hwndSB)
 {	
 	int counterTotal=0;
 	for (int j=0; j<segmentsCount; j++)
@@ -395,7 +440,7 @@ void Setup(HWND lParam)
 	si.cbSize = sizeof (si);
 	si.fMask = SIF_POS | SIF_PAGE | SIF_RANGE;
 	
-	GetScrollInfo ((HWND)lParam, SB_CTL, &si);
+	GetScrollInfo ((HWND)hwndSB, SB_CTL, &si);
 	
 	// Update scroll bar position.
 	si.cbSize = sizeof (si);
@@ -406,7 +451,7 @@ void Setup(HWND lParam)
 	
 	si.fMask = SIF_POS | SIF_PAGE | SIF_RANGE;
 	
-	SetScrollInfo ((HWND)lParam, SB_CTL, &si, TRUE);
+	SetScrollInfo ((HWND)hwndSB, SB_CTL, &si, TRUE);
 }
 
 // Mesage handler for the About box.
@@ -471,7 +516,6 @@ int GetFileName (HWND hWnd, LPTSTR szFileName, int nMax)
 // CreateCommandBand - Create a formatted command band control.
 //
 int CreateCommandBand (HWND hWnd, BOOL fFirst) {
-    HWND hwndCB, hwndBand;
     INT i;
     LONG lStyle;
     HBITMAP hBmp;
@@ -491,7 +535,7 @@ int CreateCommandBand (HWND hWnd, BOOL fFirst) {
     //DeleteObject (hBmp);
 	
     hwndCB = CommandBands_Create (hInst, hWnd, IDC_CMDBAND,
-		RBS_SMARTLABELS, himl);
+		RBS_SMARTLABELS|RBS_BANDBORDERS, himl);
 	
     // Load bitmap used as background for command bar.
     hBmp = LoadBitmap (hInst, TEXT ("CmdBarBack"));
@@ -505,7 +549,7 @@ int CreateCommandBand (HWND hWnd, BOOL fFirst) {
 	}
 	
     cbr[0].cxRestored = 230;
-    cbr[1].cxRestored = 210;
+    cbr[1].cxRestored = 230;
     cbr[1].fStyle = RBBS_FIXEDBMP;
 	// Initialize REBARBANDINFO structure for each band.
 	// 1. Menu band

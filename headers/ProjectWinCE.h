@@ -29,7 +29,6 @@ int CreateCommandBand (HWND hWnd, BOOL fFirst);
 int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				 LPWSTR lpCmdLine, int nCmdShow);
 
-int oldPos;
 int segmentsCount=0;
 
 COMMANDBANDSRESTOREINFO cbr[NUMBANDS];
@@ -39,14 +38,15 @@ SEGMENT *segments;
 TOCURSORPOS carrage={0,0,0,0,16};
 
 
-HINSTANCE			hInst;
-HWND				hwndCB;			// The command bar handle
-HWND				hwndCBND;
-HWND				hwndSB;
-HWND				hwndMW;
-HWND				hwndFONT;
-HWND				hwndFONTSIZE;
-HFONT				hfont;
+HINSTANCE		hInst;
+HWND			hwndCB;			// The command bar handle
+HWND			hwndCBND;
+HWND			hwndBand;
+HWND			hwndSB;
+HWND			hwndMW;
+HWND			hwndFONT;
+HWND			hwndFONTSIZE;
+HFONT			hfont;
 
 const TBBUTTON tbCBStdBtns[] = {
 	//  BitmapIndex      Command  State            Style    UserData  String
