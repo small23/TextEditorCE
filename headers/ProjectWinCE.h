@@ -29,13 +29,11 @@ int CreateCommandBand (HWND hWnd, BOOL fFirst);
 int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				 LPWSTR lpCmdLine, int nCmdShow);
 
-int segmentsCount=0;
-
 COMMANDBANDSRESTOREINFO cbr[NUMBANDS];
 INT nBandOrder[NUMBANDS];
 
 SEGMENT *segments;
-TOCURSORPOS carrage={0,0,0,0,16};
+TOCURSORPOS carrage={0,0,0,0,16,0};
 
 
 HINSTANCE		hInst;

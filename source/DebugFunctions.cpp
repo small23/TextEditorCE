@@ -55,7 +55,7 @@ void DF_MemOperationsTest()
 	MessageBox(NULL, buffer, TEXT("Results"), MB_OK);
 }
 
-void DF_SpeedTest(HWND hWnd, TOCURSORPOS* carrage, int lineScrolls, SEGMENT* segments, int segmentsCount)
+void DF_SpeedTest(HWND hWnd, TOCURSORPOS* carrage, int lineScrolls, SEGMENT* segments)
 {
 
 	SCROLLINFO si;
@@ -82,7 +82,7 @@ void DF_SpeedTest(HWND hWnd, TOCURSORPOS* carrage, int lineScrolls, SEGMENT* seg
 		part2=DF_Milliseconds_now();
 		for (int jj=0; jj<50; jj++)
 		{
-			GF_DrawTextByLine(segments, carrage, segmentsCount, a);
+			GF_DrawTextByLine(segments, carrage, a);
 			c=a;
 			a=b;
 			b=c;

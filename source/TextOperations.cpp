@@ -16,7 +16,10 @@ HFONT* fonts=NULL;
 TEXTMETRIC* fontsMetrics=NULL;
 int fontsArraySize=0;
 int fontsArrayCounter=0;
+int segmentsCount=0;
 
+int width=0;
+bool cursorUpDownRepeat = false;
 
 HFONT* TO_GetFonts(int *ArrayCounter)
 {
@@ -24,14 +27,16 @@ HFONT* TO_GetFonts(int *ArrayCounter)
 	return fonts;
 }
 
-void TO_CreateFont()
+int TO_GetSegmentCount(){return segmentsCount;};
+
+void TO_CreateFont(unsigned short* font, int size, unsigned char italic, unsigned char underline)
 {
 	LOGFONT lf;
-	memset(&lf, 0, sizeof(LOGFONT));          // Clear out structure.
-	lf.lfHeight = 16;                         // Request a 12-pixel-height
-	lf.lfItalic=0;
-	lf.lfUnderline=0;
-	lstrcpy(lf.lfFaceName, _T("Arial"));
+	memset(&lf, 0, sizeof(LOGFONT));
+	lf.lfHeight = size;
+	lf.lfItalic=italic;
+	lf.lfUnderline=underline;
+	lstrcpy(lf.lfFaceName, font);
 
 	if (fonts==NULL)
 	{
@@ -39,11 +44,11 @@ void TO_CreateFont()
 		fontsArraySize=10;
 		fontsArrayCounter=0;
 	}
-	fonts[fontsArrayCounter]= CreateFontIndirect(&lf);  // Create the font.
-	fontsArrayCounter=1;
+	fonts[fontsArrayCounter]= CreateFontIndirect(&lf);
+	fontsArrayCounter++;
 }
 
-void TO_GetTextSegments(SEGMENT* segments, int* segmentsCount, HWND hWnd, RECT rect)
+void TO_GetTextSegments(SEGMENT* segments, HWND hWnd, RECT rect)
 {
 	HDC hdc;
 
@@ -55,7 +60,6 @@ void TO_GetTextSegments(SEGMENT* segments, int* segmentsCount, HWND hWnd, RECT r
 	for(int i=0; i<sizeof(texts)/sizeof(wchar_t*); i++)
 	{
 		segments[i].text=(wchar_t*)malloc(512*sizeof(wchar_t));//texts[i];
-		//entersPos=(int*)realloc(entersPos,1536);
 		segments[i].textArraySize=512;
 		segments[i].length=wcslen(texts[i]);
 		while(segments[i].length > segments[i].textArraySize)
@@ -77,7 +81,7 @@ void TO_GetTextSegments(SEGMENT* segments, int* segmentsCount, HWND hWnd, RECT r
 
 		TO_RecheckSpacesAndLines(segments, i, hdc, rect);
 
-		(*segmentsCount)++;
+		segmentsCount++;
 	}
 	ReleaseDC(hWnd,hdc);
 }
@@ -107,10 +111,11 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 	{
 		segments[i].linesCounter=1;
 		segments[i].spacesPointer[0]=0;
+		segments[i].linesLength[0]=0;
 		segments[i].linesHeight[0]=16; //TODO Change to font used size
 		return;
 	}
-	segments[i].spacesPointer[spaceArrayCounter]=count-1;
+	segments[i].spacesPointer[spaceArrayCounter]=segments[i].length;                                                                                                                                  
 	spaceArrayCounter++;
 	begin=0;
 	count=1;
@@ -126,7 +131,7 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 				break;
 			j++;
 		}
-		if (j-lastJ<=1) //Если поместилось лишь одно слово - мы вылезли за пределы экрана, бьем слово на части
+		if (j-lastJ<=1 && textMetrics.cx>=rect.right-rect.left) //Если поместилось лишь одно слово - мы вылезли за пределы экрана, бьем слово на части
 		{
 			//Держал 4 строки на Athlon XP 5 строк с полной перерисовкой
 			//После отступа на 5 строк держал около 15
@@ -170,19 +175,38 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 		else //Если дошли до конца сегмента
 		{
 			segments[i].lineEnds[count]=lastSpacePointer+1;
-			segments[i].linesLength[count-1]=lastSpacePointer-begin+1;
+			segments[i].linesLength[count-1]=lastSpacePointer-begin ;
 			segments[i].linesCounter++;
 			segments[i].linesHeight[count-1]=textMetrics.cy;
 		}
 	}
 }
 
+bool TO_CheckSegmentPointers(SEGMENT* segments,int* segmentPointer, int* inSegmentLine)
+{
+	if ((*inSegmentLine)>=segments[*segmentPointer].linesCounter)
+	{
+		if ((*segmentPointer)+1>=segmentsCount)
+			return false;
+		*inSegmentLine=0;
+		(*segmentPointer)++;
+		
+	}
+	else if ((*inSegmentLine)<0)
+	{
+		if((*segmentPointer)-1<0)
+			return false;
+		(*segmentPointer)--;
+		*inSegmentLine=segments[*segmentPointer].linesCounter-1;
+	}
+	return true;
+}
+
 void TO_CalcCarragePos(SEGMENT* segments,TOCURSORPOS* carrage,HDC hdc, RECT rect)
 {
-	
 	SelectObject(hdc, fonts[0]);
 	int i=1;
-	while (segments[carrage->segment].lineEnds[i]<carrage->position)
+	while (segments[carrage->segment].lineEnds[i]<=carrage->position && segments[carrage->segment].length !=0)
 	{
 		i++;
 	}
@@ -206,6 +230,8 @@ void TO_InsertSymbol(SEGMENT* segments,TOCURSORPOS* carrage, wchar_t simbol, HDC
 	carrage->position++;
 	TO_RecheckSpacesAndLines(segments, carrage->segment, hdc, rect);
 	TO_CalcCarragePos(segments,carrage, hdc, rect);
+
+	cursorUpDownRepeat=false;
 }
 
 void TO_DeleteSymbol(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect)
@@ -216,10 +242,141 @@ void TO_DeleteSymbol(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect)
 		segments[carrage->segment].length--;
 		carrage->position--;
 	}
-	else //Если переходим на новый сегмент
+	else //Если переходим на новый сегмент //TODO Deleting-mergin segments
 	{
-		
+		carrage->lineLocation--;
+		if (TO_CheckSegmentPointers(segments, &carrage->segment,&carrage->lineLocation))
+		{
+			carrage->position=segments[carrage->segment].length;
+			memmove(&segments[carrage->segment].text[carrage->position-1],&segments[carrage->segment].text[carrage->position], (segments[carrage->segment].length-carrage->position)*sizeof(wchar_t));
+			segments[carrage->segment].length--;
+			carrage->position--; 
+		}
+		else
+			carrage->lineLocation++;
 	}
 	TO_RecheckSpacesAndLines(segments, carrage->segment, hdc, rect);
 	TO_CalcCarragePos(segments,carrage, hdc, rect);
+
+	cursorUpDownRepeat=false;
+}
+
+void TO_AddSegment(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect)
+{
+
+
+}
+
+void TO_Arrows(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect, WPARAM arrow)
+{
+	SIZE textMetrics;
+	int i;
+	switch (arrow) 
+	{
+	case VK_LEFT:
+		cursorUpDownRepeat=false;
+		carrage->position--;
+		if (carrage->position<0)
+		{
+			if (carrage->segment>0)
+			{
+				carrage->segment--;
+				carrage->position=segments[carrage->segment].length;
+			}
+			else
+				carrage->position=0;
+		}
+		break; 
+	case VK_RIGHT:
+		cursorUpDownRepeat=false;
+		carrage->position++;
+		if (carrage->position>segments[carrage->segment].length)
+		{
+			if (carrage->segment<segmentsCount-1)
+			{
+				carrage->segment++;
+				carrage->position=0;
+			}
+			else
+				carrage->position--;;
+		}
+		break; 
+	case VK_UP:
+		SelectObject(hdc, fonts[0]);
+
+		if (!cursorUpDownRepeat)
+		{
+			GetTextExtentPoint32(hdc, &segments[carrage->segment].text[segments[carrage->segment].lineEnds[carrage->lineLocation]], carrage->position - segments[carrage->segment].lineEnds[carrage->lineLocation],&textMetrics);      
+			width = textMetrics.cx;
+			cursorUpDownRepeat=true;
+		}
+
+		carrage->lineLocation--;
+		if (TO_CheckSegmentPointers(segments, &carrage->segment,&carrage->lineLocation))
+		{
+			carrage->position=segments[carrage->segment].lineEnds[carrage->lineLocation];
+			TO_ArrowUpDownPosCalc(segments,carrage,hdc,rect);
+		}
+		else
+		{
+			carrage->lineLocation++;
+		}
+
+		break; 
+
+	case VK_DOWN:
+		SelectObject(hdc, fonts[0]);
+
+		if (!cursorUpDownRepeat)
+		{
+			GetTextExtentPoint32(hdc, &segments[carrage->segment].text[segments[carrage->segment].lineEnds[carrage->lineLocation]], carrage->position - segments[carrage->segment].lineEnds[carrage->lineLocation],&textMetrics);      
+			width = textMetrics.cx;
+			cursorUpDownRepeat=true;
+		}
+
+		carrage->lineLocation++;
+		if (TO_CheckSegmentPointers(segments, &carrage->segment,&carrage->lineLocation))
+		{
+			carrage->position=segments[carrage->segment].lineEnds[carrage->lineLocation];
+			TO_ArrowUpDownPosCalc(segments,carrage,hdc,rect);
+		}
+		else
+		{
+			carrage->lineLocation--;
+		}
+
+		break; 
+	} 	
+	TO_CalcCarragePos(segments,carrage, hdc, rect);
+}
+
+void TO_ArrowUpDownPosCalc(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect)
+{
+	if (segments[carrage->segment].length==0)
+		return;
+	SIZE textMetrics={-1,-1};
+	while (textMetrics.cx<width)
+	{
+		GetTextExtentPoint32(hdc, &segments[carrage->segment].text[segments[carrage->segment].lineEnds[carrage->lineLocation]],
+			carrage->position - segments[carrage->segment].lineEnds[carrage->lineLocation],&textMetrics);
+		if (carrage->position>=segments[carrage->segment].lineEnds[carrage->lineLocation+1])
+		{
+			carrage->position--;
+			break;
+		}
+		if (textMetrics.cx>=width)
+		{
+			if (textMetrics.cx==width){break;}
+			else if (carrage->position > 0 && carrage->position > segments[carrage->segment].lineEnds[carrage->lineLocation])
+			{
+				int widthHigh=textMetrics.cx;
+				GetTextExtentPoint32(hdc, &segments[carrage->segment].text[segments[carrage->segment].lineEnds[carrage->lineLocation]],
+					(carrage->position -1)  - segments[carrage->segment].lineEnds[carrage->lineLocation],&textMetrics);
+				if (widthHigh-width>width-textMetrics.cx)
+					carrage->position--;
+			}
+			break;
+		}
+		carrage->position++;
+	}
 }

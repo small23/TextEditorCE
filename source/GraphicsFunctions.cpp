@@ -10,10 +10,10 @@
 		HideCaret(hWnd);\
 	}
 
-
 bool cursorHighLighted=false;
 bool _caretIsShown=false; 
 GFDRAWEDLINES drawedLines = {0,0,0,0};
+int caretHeight=16;
 HWND hWnd=NULL;
 RECT rect;
 
@@ -39,7 +39,7 @@ void GF_RectChange(RECT rectangle)
 	rect=rectangle;
 }
 
-void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* carrage,int segmentsCount, int newLine)
+void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* carrage, int newLine)
 {
 	int scrolledLines=newLine-drawedLines.totalCount;
 	int inSegmentLine=0;
@@ -51,9 +51,9 @@ void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* carrage,int segmentsCount
 	if (scrolledLines==0)
 		return;
 
-	_GF_LocateTextCoords(segments, segmentsCount, newLine, &segmentPointer, &inSegmentLine);
+	_GF_LocateTextCoords(segments, newLine, &segmentPointer, &inSegmentLine);
 
-	scrollDistance = _GF_CalcScrollDistanceAndBorder(segments, &borderTop, segmentsCount, scrolledLines, &inSegmentLine, &segmentPointer);
+	scrollDistance = _GF_CalcScrollDistanceAndBorder(segments, &borderTop, scrolledLines, &inSegmentLine, &segmentPointer);
 
 	ChkAndHideCaret();
 
@@ -89,13 +89,13 @@ void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* carrage,int segmentsCount
 		//ScrollDC(hdc, 0, scrollDistance, &rect,&rect, NULL,NULL);
 	}
 
-	_GF_DrawText(segments, segmentsCount, hdc, segmentPointer, inSegmentLine, scrolledLines, borderTop);
+	_GF_DrawText(segments, hdc, segmentPointer, inSegmentLine, scrolledLines, borderTop);
 
 	ReleaseDC(hWnd, hdc);
-	_GF_SetCursorPos(segments, carrage, segmentsCount);
+	GF_SetCursorPos(segments, carrage);
 }
 
-void GF_DrawTextAll(SEGMENT* segments, TOCURSORPOS* carrage, int segmentsCount, int newLine)
+void GF_DrawTextAll(SEGMENT* segments, TOCURSORPOS* carrage, int newLine)
 {
 	PAINTSTRUCT ps;
     HDC hdc;
@@ -105,18 +105,20 @@ void GF_DrawTextAll(SEGMENT* segments, TOCURSORPOS* carrage, int segmentsCount, 
 	
 	ChkAndHideCaret();
 	
-	_GF_LocateTextCoords(segments, segmentsCount, newLine, &segmentPointer, &inSegmentLine);
+	_GF_LocateTextCoords(segments, newLine, &segmentPointer, &inSegmentLine);
 	
 	hdc = BeginPaint (hWnd, &ps); 
 	
-	_GF_DrawText(segments, segmentsCount, hdc, segmentPointer, inSegmentLine, 999, rect.top);
+	_GF_DrawText(segments, hdc, segmentPointer, inSegmentLine, 999, rect.top);
 
 	EndPaint (hWnd, &ps); 
-	_GF_SetCursorPos(segments, carrage, segmentsCount);
+	GF_SetCursorPos(segments, carrage);
 }
 
-void _GF_SetCursorPos(SEGMENT* segments, TOCURSORPOS* caret, int segmentsCount)
+void GF_SetCursorPos(SEGMENT* segments, TOCURSORPOS* caret)
 {
+	ChkAndHideCaret();
+
 	int inSegmentLine=drawedLines.lineBegin;
 	int segmentPointer=drawedLines.segment;
 	int rectTop=rect.top;
@@ -128,7 +130,7 @@ void _GF_SetCursorPos(SEGMENT* segments, TOCURSORPOS* caret, int segmentsCount)
 			return;
 	}
 
-	while (rectTop<rect.bottom && segmentPointer<segmentsCount) //Находим строку, которая рисуется самой последней на новом экране
+	while (rectTop<rect.bottom) //Находим строку, которая рисуется самой последней на новом экране
 	{
 		if (inSegmentLine==caret->lineLocation && segmentPointer==caret->segment)
 		{
@@ -143,12 +145,12 @@ void _GF_SetCursorPos(SEGMENT* segments, TOCURSORPOS* caret, int segmentsCount)
 		rectTop+=segments[segmentPointer].linesHeight[inSegmentLine];
 		inSegmentLine++;
 
-		if (!_GF_CheckSegmentPointers(segments,&segmentPointer, &inSegmentLine, segmentsCount)) {return;}
+		if (!TO_CheckSegmentPointers(segments,&segmentPointer, &inSegmentLine)) {return;}
 	}
 }
 
 //Calculating coordinates of string, needed to draw, ScrollDC Y data and new insegment and segment pointers 
-int _GF_CalcScrollDistanceAndBorder(SEGMENT* segments, int* borderTop, int segmentsCount, int scrolledLines, int* inSegmentLine, int* segmentPointer)
+int _GF_CalcScrollDistanceAndBorder(SEGMENT* segments, int* borderTop, int scrolledLines, int* inSegmentLine, int* segmentPointer)
 {
 	int tempInSegmentLine=*inSegmentLine;
 	int tempSegmentPointer=*segmentPointer;
@@ -163,14 +165,14 @@ int _GF_CalcScrollDistanceAndBorder(SEGMENT* segments, int* borderTop, int segme
 			scrollDistance+=segments[tempSegmentPointer].linesHeight[tempInSegmentLine];
 			scrolledLines++;
 			tempInSegmentLine++;
-			if (!_GF_CheckSegmentPointers(segments, &tempSegmentPointer, &tempInSegmentLine, segmentsCount)) {return scrollDistance;}
+			if (!TO_CheckSegmentPointers(segments, &tempSegmentPointer, &tempInSegmentLine)) {return scrollDistance;}
 		}
 	}
 	else //If scrolls up - need to draw bottom strings -> new inSegment and segment pointers, new border
 	{
 		//Calculating hided strings, step backword
 		tempInSegmentLine--;
-		if (!_GF_CheckSegmentPointers(segments, &tempSegmentPointer, &tempInSegmentLine, segmentsCount)) {return scrollDistance;}
+		if (!TO_CheckSegmentPointers(segments, &tempSegmentPointer, &tempInSegmentLine)) {return scrollDistance;}
 
 		while (scrolledLines>0)
 		{
@@ -178,7 +180,7 @@ int _GF_CalcScrollDistanceAndBorder(SEGMENT* segments, int* borderTop, int segme
 			scrolledLines--;
 			tempInSegmentLine--;
 
-			if (!_GF_CheckSegmentPointers(segments, &tempSegmentPointer, &tempInSegmentLine, segmentsCount)) {break;}
+			if (!TO_CheckSegmentPointers(segments, &tempSegmentPointer, &tempInSegmentLine)) {break;}
 		}
 
 		tempInSegmentLine = *inSegmentLine;
@@ -199,7 +201,7 @@ int _GF_CalcScrollDistanceAndBorder(SEGMENT* segments, int* borderTop, int segme
 			lastDrawedHeight+=segments[tempSegmentPointer].linesHeight[tempInSegmentLine];
 			tempInSegmentLine++;
 
-			if (!_GF_CheckSegmentPointers(segments, &tempSegmentPointer, &tempInSegmentLine, segmentsCount)) {return scrollDistance;}
+			if (!TO_CheckSegmentPointers(segments, &tempSegmentPointer, &tempInSegmentLine)) {return scrollDistance;}
 
 		}
 	}
@@ -207,7 +209,7 @@ int _GF_CalcScrollDistanceAndBorder(SEGMENT* segments, int* borderTop, int segme
 	return scrollDistance;
 }
 
-void _GF_DrawText(SEGMENT* segments, int segmentsCount, HDC hdc, int segmentPointer, int inSegmentLine, int scrolledLines, int borderTop)
+void _GF_DrawText(SEGMENT* segments, HDC hdc, int segmentPointer, int inSegmentLine, int scrolledLines, int borderTop)
 {
 	int arraySize=0;
 	HFONT* fonts;
@@ -218,46 +220,26 @@ void _GF_DrawText(SEGMENT* segments, int segmentsCount, HDC hdc, int segmentPoin
 
 	while (scrolledLines>0 && borderTop<rect.bottom)
 	{
-		ExtTextOut(hdc,3,borderTop,0,NULL,segments[segmentPointer].text+(segments[segmentPointer].lineEnds[inSegmentLine]),
-			segments[segmentPointer].linesLength[inSegmentLine],NULL);
+		ExtTextOut(hdc, rect.left, borderTop, 0, NULL, segments[segmentPointer].text+(segments[segmentPointer].lineEnds[inSegmentLine]),
+			segments[segmentPointer].linesLength[inSegmentLine], NULL);
 		
 		borderTop+=segments[segmentPointer].linesHeight[inSegmentLine];
 		inSegmentLine++;
 		scrolledLines--;
 		drawedLines.linesDrawed++;
 
-		if (!_GF_CheckSegmentPointers(segments,&segmentPointer, &inSegmentLine, segmentsCount)) {return;}
+		if (!TO_CheckSegmentPointers(segments,&segmentPointer, &inSegmentLine)) {return;}
 	}
 }
 
-_inline bool _GF_CheckSegmentPointers(SEGMENT* segments,int* segmentPointer, int* inSegmentLine, int segmentsCount)
-{
-	if ((*inSegmentLine)>=segments[*segmentPointer].linesCounter)
-	{
-		if ((*segmentPointer)+1>=segmentsCount)
-			return false;
-		*inSegmentLine=0;
-		(*segmentPointer)++;
-		
-	}
-	else if ((*inSegmentLine)<0)
-	{
-		(*segmentPointer)--;
-		if((*segmentPointer)<0)
-			return false;
-		*inSegmentLine=segments[*segmentPointer].linesCounter-1;
-	}
-	return true;
-}
-
-void _GF_LocateTextCoords(SEGMENT* segments, int segmentsCount, int newLine, int* segmentPointer, int* inSegmentLine)
+void _GF_LocateTextCoords(SEGMENT* segments, int newLine, int* segmentPointer, int* inSegmentLine)
 {
 	drawedLines.totalCount = newLine;
 	while (newLine>0)
 	{
 		(*inSegmentLine)++;
 		newLine--;
-		if (!_GF_CheckSegmentPointers(segments,segmentPointer, inSegmentLine, segmentsCount)) 
+		if (!TO_CheckSegmentPointers(segments,segmentPointer, inSegmentLine)) 
 		{	
 			drawedLines.totalCount-=newLine;
 			(*inSegmentLine)--;
@@ -268,4 +250,3 @@ void _GF_LocateTextCoords(SEGMENT* segments, int segmentsCount, int newLine, int
 	drawedLines.lineBegin = *inSegmentLine;
 	drawedLines.linesDrawed = 0;
 }
-

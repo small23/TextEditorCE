@@ -90,6 +90,10 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 
 LRESULT KeydownHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 {
+	HDC hdc;
+	wchar_t charCode =wParam;
+	
+	hdc=GetDC(hwndMW);
 	switch (wParam) 
 	{
 	case VK_HOME:       // Home 
@@ -105,21 +109,25 @@ LRESULT KeydownHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		
 		break; 
 	case VK_LEFT:       // Left arrow 
-		
+		TO_Arrows(segments, &carrage, hdc, GF_GetRect(), wParam);
+		GF_SetCursorPos(segments, &carrage);
 		break; 
 	case VK_RIGHT:      // Right arrow 
-		
+		TO_Arrows(segments, &carrage, hdc, GF_GetRect(), wParam);
+		GF_SetCursorPos(segments, &carrage);
 		break; 
 	case VK_UP:         // Up arrow 
-		
+		TO_Arrows(segments, &carrage, hdc, GF_GetRect(), wParam);
+		GF_SetCursorPos(segments, &carrage);
 		break; 
 	case VK_DOWN:       // Down arrow 
-		
+		TO_Arrows(segments, &carrage, hdc, GF_GetRect(), wParam);
+		GF_SetCursorPos(segments, &carrage);
 		break; 
 	case VK_DELETE:     // Delete 
-		
 		break; 
 	} 	
+	ReleaseDC(hwndMW,hdc);
 	return 0; 
 }
 
@@ -184,12 +192,12 @@ LRESULT CommandHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 			}
 		case ID_TOOLS_DEBUG_SPEEDTEST2:
 			{
-				DF_SpeedTest(hWnd, &carrage, 2, segments, segmentsCount);
+				DF_SpeedTest(hWnd, &carrage, 2, segments);
 				return 0;
 			}
 		case ID_TOOLS_DEBUG_SPEEDTEST10:
 			{
-				DF_SpeedTest(hWnd, &carrage, 10, segments, segmentsCount);
+				DF_SpeedTest(hWnd, &carrage, 10, segments);
 				return 0;
 			}
 		case ID_FILE_OPEN:
@@ -250,11 +258,11 @@ LRESULT CommandHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 			{
 				int ItemIndex = SendMessage((HWND) lParam, (UINT) CB_GETCURSEL,
 					(WPARAM) 0, (LPARAM) 0);
-				if (lParam == hwndFONT)
+				if ((HWND)lParam == hwndFONT)
 				{
 
 				}
-				else if (lparam == hwndFONTSIZE)
+				else if ((HWND)lParam == hwndFONTSIZE)
 				{
 
 
@@ -320,7 +328,7 @@ LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	
 	SetScrollInfo((HWND)lParam, SB_CTL, &si, TRUE);
 
-	GF_DrawTextByLine(segments, &carrage,segmentsCount, si.nPos);
+	GF_DrawTextByLine(segments, &carrage, si.nPos);
 
 	return 0;
 }
@@ -333,7 +341,7 @@ LRESULT PaintHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	si.fMask = SIF_POS;			
 	GetScrollInfo ((HWND)hwndSB, SB_CTL, &si);
 	
-	GF_DrawTextAll(segments, &carrage, segmentsCount, si.nPos);
+	GF_DrawTextAll(segments, &carrage, si.nPos);
 	return 0;
 }
 
@@ -416,8 +424,8 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	GF_Init(hwndMW, rect);
 
 	segments = new SEGMENT[50];
-	TO_CreateFont();
-	TO_GetTextSegments( segments, &segmentsCount, hWnd, rect);
+	TO_CreateFont(L"Arial", 16, 0,0);
+	TO_GetTextSegments( segments, hWnd, rect);
 	
 	CreateCommandBand (hWnd, TRUE);
 	
@@ -430,7 +438,7 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 void Setup(HWND hwndSB)
 {	
 	int counterTotal=0;
-	for (int j=0; j<segmentsCount; j++)
+	for (int j=0; j<TO_GetSegmentCount(); j++)
 	{
 		counterTotal+=segments[j].linesCounter;
 	}
