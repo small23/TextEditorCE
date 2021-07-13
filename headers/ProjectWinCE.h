@@ -3,15 +3,14 @@
 #include <Afxwin.h>
 #include <windows.h>
 #include <stdlib.h>
-#include "resource.h"
 #include <Commdlg.h>
 #include <commctrl.h>  
 #include "GlobalDefinitions.h"
-#include "textData.h"
 #include "TextOperations.h"
 #include "GraphicsFunctions.h"
 #include "DebugFunctions.h"
-
+#include "FontsStorage.h"
+#include "..\resource.h"
 
 LRESULT CALLBACK MainWndProc (HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);

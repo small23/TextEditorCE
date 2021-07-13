@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "GlobalDefinitions.h"
 #include "TextOperations.h"
-#include "textData.h"
+#include "FontsStorage.h"
 
 typedef struct
 {

@@ -17,6 +17,7 @@ int caretHeight=16;
 HWND hWnd=NULL;
 RECT rect;
 
+
 RECT GF_GetRect()
 {
 	return rect;
@@ -86,7 +87,6 @@ void GF_DrawTextByLine(SEGMENT* segments, TOCURSORPOS* carrage, int newLine)
 				NULL,0,0,WHITENESS);
 			scrolledLines=abs(scrolledLines);
 		}
-		//ScrollDC(hdc, 0, scrollDistance, &rect,&rect, NULL,NULL);
 	}
 
 	_GF_DrawText(segments, hdc, segmentPointer, inSegmentLine, scrolledLines, borderTop);
@@ -215,7 +215,7 @@ void _GF_DrawText(SEGMENT* segments, HDC hdc, int segmentPointer, int inSegmentL
 	HFONT* fonts;
 
 
-	fonts=TO_GetFonts(&arraySize);
+	fonts=FS_GetFonts(&arraySize);
 	SelectObject(hdc, fonts[0]);
 
 	while (scrolledLines>0 && borderTop<rect.bottom)

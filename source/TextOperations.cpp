@@ -12,49 +12,23 @@ wchar_t *someText8=TEXT("The aforementioned shoulders are rounded body parts tha
 wchar_t *someText9=TEXT("");
 wchar_t *someText10=TEXT("");
 
-HFONT* fonts=NULL;
 TEXTMETRIC* fontsMetrics=NULL;
-int fontsArraySize=0;
-int fontsArrayCounter=0;
 int segmentsCount=0;
-
 int width=0;
 bool cursorUpDownRepeat = false;
 
-HFONT* TO_GetFonts(int *ArrayCounter)
-{
-	*ArrayCounter=fontsArrayCounter; 
-	return fonts;
-}
 
 int TO_GetSegmentCount(){return segmentsCount;};
-
-void TO_CreateFont(unsigned short* font, int size, unsigned char italic, unsigned char underline)
-{
-	LOGFONT lf;
-	memset(&lf, 0, sizeof(LOGFONT));
-	lf.lfHeight = size;
-	lf.lfItalic=italic;
-	lf.lfUnderline=underline;
-	lstrcpy(lf.lfFaceName, font);
-
-	if (fonts==NULL)
-	{
-		fonts=(HFONT*)malloc(sizeof(HFONT)*10);
-		fontsArraySize=10;
-		fontsArrayCounter=0;
-	}
-	fonts[fontsArrayCounter]= CreateFontIndirect(&lf);
-	fontsArrayCounter++;
-}
 
 void TO_GetTextSegments(SEGMENT* segments, HWND hWnd, RECT rect)
 {
 	HDC hdc;
 
+	FS_CreateFont(L"Arial", 16, 0,0);
 	hdc = GetDC(hWnd);
-
-	SelectObject(hdc, fonts[0]);
+	
+	int countFonts = 0;
+	SelectObject(hdc, FS_GetFonts(&countFonts)[0]);
 	wchar_t* texts[]={someText1,someText2, someText9,someText3, someText4, someText5, someText6, someText9, someText7, someText8, someText9,someText2, someText9,someText3, someText4, someText5, someText6, someText9, someText4, someText5, someText6, someText9, someText7, someText8, someText9,someText2, someText9,someText3, someText4, someText5, someText6, someText9,}; 
 	
 	for(int i=0; i<sizeof(texts)/sizeof(wchar_t*); i++)
@@ -83,12 +57,14 @@ void TO_GetTextSegments(SEGMENT* segments, HWND hWnd, RECT rect)
 
 		segmentsCount++;
 	}
+
 	ReleaseDC(hWnd,hdc);
 }
 
 void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 {		
-	SelectObject(hdc, fonts[0]);
+	int countFonts = 0;
+	SelectObject(hdc, FS_GetFonts(&countFonts)[0]);
 	segments[i].linesCounter=0;
 	SIZE textMetrics;
 	int count=0;
@@ -139,12 +115,12 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 			//ѕрогрессивна€ шкала отсупа, отсчет от начала до  конца строки - не смог повеситть
 			lastSpacePointer=begin;
 			textMetrics.cx=10;
-			while (textMetrics.cx<rect.right) //ѕервый проход примерно определ€ем возможную длинну
+			while (textMetrics.cx<rect.right-rect.left) //ѕервый проход примерно определ€ем возможную длинну
 			{
 				lastSpacePointer+=10;
 				GetTextExtentPoint32(hdc, &segments[i].text[begin], lastSpacePointer-begin,&textMetrics);
 			}
-			while (textMetrics.cx>rect.right) //¬торой проход уточн€ем длинну доступную дл€ отображени€
+			while (textMetrics.cx>rect.right-rect.left) //¬торой проход уточн€ем длинну доступную дл€ отображени€
 			{
 				lastSpacePointer--;
 				GetTextExtentPoint32(hdc, &segments[i].text[begin], lastSpacePointer-begin,&textMetrics);
@@ -175,9 +151,12 @@ void TO_RecheckSpacesAndLines(SEGMENT* segments, int i, HDC hdc,RECT rect)
 		else //≈сли дошли до конца сегмента
 		{
 			segments[i].lineEnds[count]=lastSpacePointer+1;
-			segments[i].linesLength[count-1]=lastSpacePointer-begin ;
+			segments[i].linesLength[count-1]=lastSpacePointer-begin;
 			segments[i].linesCounter++;
 			segments[i].linesHeight[count-1]=textMetrics.cy;
+			begin=lastSpacePointer+1;
+			lastJ=j;
+			count++;
 		}
 	}
 }
@@ -204,7 +183,8 @@ bool TO_CheckSegmentPointers(SEGMENT* segments,int* segmentPointer, int* inSegme
 
 void TO_CalcCarragePos(SEGMENT* segments,TOCURSORPOS* carrage,HDC hdc, RECT rect)
 {
-	SelectObject(hdc, fonts[0]);
+	int countFonts = 0;
+	SelectObject(hdc, FS_GetFonts(&countFonts)[0]);
 	int i=1;
 	while (segments[carrage->segment].lineEnds[i]<=carrage->position && segments[carrage->segment].length !=0)
 	{
@@ -267,10 +247,26 @@ void TO_AddSegment(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect)
 
 }
 
+void TO_HomeEnd(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect, WPARAM key)
+{
+	switch (key)
+	{
+		case VK_END:
+			if (segments[carrage->segment].length>0)
+				carrage->position=segments[carrage->segment].lineEnds[carrage->lineLocation+1]-1;
+			else
+				carrage->position=segments[carrage->segment].lineEnds[carrage->lineLocation];
+			break; 
+		case VK_HOME:
+			carrage->position=segments[carrage->segment].lineEnds[carrage->lineLocation];
+			break; 
+	}
+	cursorUpDownRepeat=false;
+	TO_CalcCarragePos(segments,carrage, hdc, rect);
+}
+
 void TO_Arrows(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect, WPARAM arrow)
 {
-	SIZE textMetrics;
-	int i;
 	switch (arrow) 
 	{
 	case VK_LEFT:
@@ -302,59 +298,46 @@ void TO_Arrows(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect, WPARA
 		}
 		break; 
 	case VK_UP:
-		SelectObject(hdc, fonts[0]);
-
-		if (!cursorUpDownRepeat)
-		{
-			GetTextExtentPoint32(hdc, &segments[carrage->segment].text[segments[carrage->segment].lineEnds[carrage->lineLocation]], carrage->position - segments[carrage->segment].lineEnds[carrage->lineLocation],&textMetrics);      
-			width = textMetrics.cx;
-			cursorUpDownRepeat=true;
-		}
-
-		carrage->lineLocation--;
-		if (TO_CheckSegmentPointers(segments, &carrage->segment,&carrage->lineLocation))
-		{
-			carrage->position=segments[carrage->segment].lineEnds[carrage->lineLocation];
-			TO_ArrowUpDownPosCalc(segments,carrage,hdc,rect);
-		}
-		else
-		{
-			carrage->lineLocation++;
-		}
-
+		TO_ArrowUpDownPosCalc(segments, carrage, hdc, rect, -1);
 		break; 
 
 	case VK_DOWN:
-		SelectObject(hdc, fonts[0]);
-
-		if (!cursorUpDownRepeat)
-		{
-			GetTextExtentPoint32(hdc, &segments[carrage->segment].text[segments[carrage->segment].lineEnds[carrage->lineLocation]], carrage->position - segments[carrage->segment].lineEnds[carrage->lineLocation],&textMetrics);      
-			width = textMetrics.cx;
-			cursorUpDownRepeat=true;
-		}
-
-		carrage->lineLocation++;
-		if (TO_CheckSegmentPointers(segments, &carrage->segment,&carrage->lineLocation))
-		{
-			carrage->position=segments[carrage->segment].lineEnds[carrage->lineLocation];
-			TO_ArrowUpDownPosCalc(segments,carrage,hdc,rect);
-		}
-		else
-		{
-			carrage->lineLocation--;
-		}
-
+		TO_ArrowUpDownPosCalc(segments, carrage, hdc, rect, 1);
 		break; 
 	} 	
 	TO_CalcCarragePos(segments,carrage, hdc, rect);
 }
 
-void TO_ArrowUpDownPosCalc(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect)
+void TO_ArrowUpDownPosCalc(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect, int counter)
 {
+	SIZE textMetrics;
+	int countFonts;
+
+	SelectObject(hdc, FS_GetFonts(&countFonts)[0]);
+	if (!cursorUpDownRepeat)
+	{
+		GetTextExtentPoint32(hdc, &segments[carrage->segment].text[segments[carrage->segment].lineEnds[carrage->lineLocation]], carrage->position - segments[carrage->segment].lineEnds[carrage->lineLocation],&textMetrics);      
+		width = textMetrics.cx;
+		cursorUpDownRepeat=true;
+	}
+
+	carrage->lineLocation+=counter;
+	if (TO_CheckSegmentPointers(segments, &carrage->segment,&carrage->lineLocation))
+	{
+		carrage->position=segments[carrage->segment].lineEnds[carrage->lineLocation];
+	}
+	else
+	{
+		carrage->lineLocation-=counter;
+		return;
+	}
+
 	if (segments[carrage->segment].length==0)
 		return;
-	SIZE textMetrics={-1,-1};
+
+	textMetrics.cx=-1;
+	textMetrics.cy=-1;
+
 	while (textMetrics.cx<width)
 	{
 		GetTextExtentPoint32(hdc, &segments[carrage->segment].text[segments[carrage->segment].lineEnds[carrage->lineLocation]],

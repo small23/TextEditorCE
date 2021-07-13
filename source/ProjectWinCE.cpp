@@ -84,6 +84,24 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 				}
 			}
 		}
+	case WM_LBUTTONDOWN:
+		{
+			POINT point;
+			point.x=LOWORD(lParam);
+			point.y=HIWORD(lParam);
+			HDC hdc = GetDC(hwndMW);
+			SetPixel(hdc, point.x, point.y, RGB(0,0,0));
+			ReleaseDC(hwndMW, hdc);
+		}
+	case WM_MOUSEMOVE:
+		{
+			POINT point;
+			point.x=LOWORD(lParam);
+			point.y=HIWORD(lParam);
+			HDC hdc = GetDC(hwndMW);
+			SetPixel(hdc, point.x, point.y, RGB(100,100,100));
+			ReleaseDC(hwndMW, hdc);
+		}
 	}
     return DefWindowProc (hWnd, wMsg, wParam, lParam);
 }
@@ -97,10 +115,12 @@ LRESULT KeydownHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	switch (wParam) 
 	{
 	case VK_HOME:       // Home 
-		
+		TO_HomeEnd(segments, &carrage, hdc, GF_GetRect(), wParam);
+		GF_SetCursorPos(segments, &carrage);
 		break; 
 	case VK_END:        // End 
-		
+		TO_HomeEnd(segments, &carrage, hdc, GF_GetRect(), wParam);
+		GF_SetCursorPos(segments, &carrage);
 		break; 
 	case VK_PRIOR:      // Page Up 
 		
@@ -145,7 +165,7 @@ LRESULT CharHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 	case L'\t':
-		{
+		{	          
 			break;
 		}
 	case L'\r':
@@ -260,17 +280,16 @@ LRESULT CommandHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 					(WPARAM) 0, (LPARAM) 0);
 				if ((HWND)lParam == hwndFONT)
 				{
-
+					MessageBox(hWnd, (LPCWSTR) FS_GetFontFamily(ItemIndex)->szFontFamily, TEXT("Item Selected"), MB_OK);
 				}
 				else if ((HWND)lParam == hwndFONTSIZE)
 				{
-
-
+					TCHAR ListItem[64];
+					(TCHAR) SendMessage((HWND) lParam, (UINT) CB_GETLBTEXT,
+						(WPARAM) ItemIndex, (LPARAM) ListItem);
+					MessageBox(hWnd, (LPCWSTR) ListItem, TEXT("Item Selected"), MB_OK);
 				}
-				TCHAR ListItem[64];
-				(TCHAR) SendMessage((HWND) lParam, (UINT) CB_GETLBTEXT,
-					(WPARAM) ItemIndex, (LPARAM) ListItem);
-				MessageBox(hWnd, (LPCWSTR) ListItem, TEXT("Item Selected"), MB_OK);
+
 				break;
 			}
 		}
@@ -422,9 +441,8 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	rect.right -= SBWIDTH + TEXTBORDERS;
 	
 	GF_Init(hwndMW, rect);
-
+	FS_InitFonts(hwndMW);
 	segments = new SEGMENT[50];
-	TO_CreateFont(L"Arial", 16, 0,0);
 	TO_GetTextSegments( segments, hWnd, rect);
 	
 	CreateCommandBand (hWnd, TRUE);
@@ -592,11 +610,12 @@ int CreateCommandBand (HWND hWnd, BOOL fFirst) {
 		CBS_DROPDOWNLIST | WS_VSCROLL,
 		IDC_FONT, 10);
 	hwndFONTSIZE = CommandBar_InsertComboBox (hwndBand, hInst, 40,
-		CBS_DROPDOWNLIST | WS_VSCROLL,
+		CBS_DROPDOWN | WS_VSCROLL,
 		IDC_FONTSIZE, 11);
 	// Fill in combo box.
-	for (i = 0; i < 10; i++) {
-		wsprintf (szTmp, TEXT ("Item %d"), i);
+	for (i = 0; i < FS_GetFontsCounter(); i++) {
+		FSFONTFAMILY* temp = FS_GetFontFamily(i);
+		wsprintf (szTmp,temp->szShortName, i);
 		SendDlgItemMessageW(hwndBand, IDC_FONT, CB_INSERTSTRING, -1,
 			(LPARAM)szTmp);
 	}
