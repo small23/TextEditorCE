@@ -3,6 +3,8 @@
 #include "stdafx.h"
 #include "ProjectWinCE.h"
 
+bool initialized=false;
+
 //======================================================================
 // Program entry point
 //
@@ -46,7 +48,7 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 	case WM_CREATE:
 		{
 			
-			return 0;
+			//return 0;
 		}
 	case WM_VSCROLL:
 		{
@@ -80,7 +82,7 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 					SetWindowPos(hwndSB, HWND_TOP, rectMW.right-SBWIDTH, rectRebar.bottom, SBWIDTH, rectMW.bottom-rectRebar.bottom, 0);
 					InvalidateRect(hwndSB,NULL,TRUE);
 					InvalidateRect(hwndMW,NULL,TRUE);
-					break;
+					return 0;
 				}
 			}
 		}
@@ -92,6 +94,7 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 			HDC hdc = GetDC(hwndMW);
 			SetPixel(hdc, point.x, point.y, RGB(0,0,0));
 			ReleaseDC(hwndMW, hdc);
+			return 0;
 		}
 	case WM_MOUSEMOVE:
 		{
@@ -101,6 +104,37 @@ LRESULT CALLBACK MainWndProc (HWND hWnd, UINT wMsg, WPARAM wParam,
 			HDC hdc = GetDC(hwndMW);
 			SetPixel(hdc, point.x, point.y, RGB(100,100,100));
 			ReleaseDC(hwndMW, hdc);
+			return 0;
+		}
+	case WM_SIZE:
+		{
+			SIZE newSize;
+			newSize.cx=LOWORD(lParam);
+			newSize.cy=HIWORD(lParam);
+			if (wParam==SIZE_RESTORED && initialized)
+			{
+				//calc main window change
+				RECT rect, rectRebar;
+				rect = GF_GetRectGlobal();
+				rect.bottom=newSize.cy+rect.top;
+				rect.right=newSize.cx+rect.left;
+				SetWindowPos(hwndMW, HWND_TOP, rect.left, rect.top,newSize.cx, newSize.cy, 0);
+				GF_SaveGlobalRect(rect);
+				
+				//change scrollBar
+				GetClientRect (hwndCB, &rectRebar);
+				SetWindowPos(hwndSB, HWND_TOP, rect.right-SBWIDTH, rectRebar.bottom, SBWIDTH, rect.bottom-rectRebar.bottom, 0);
+				
+				//change rect of text
+				rect.top = rectRebar.bottom;
+				rect.left = TEXTBORDERS;
+				rect.right -= SBWIDTH + TEXTBORDERS;
+				GF_RectChange(rect);
+				
+				InvalidateRect(hwndSB,NULL,TRUE);
+				InvalidateRect(hwndMW,NULL,TRUE);
+				return 0;
+			}
 		}
 	}
     return DefWindowProc (hWnd, wMsg, wParam, lParam);
@@ -302,12 +336,12 @@ LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 {
 	SCROLLINFO si;
 	
-	// Get scroll bar position.
+	// Get scroll bar position
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_POS | SIF_PAGE | SIF_RANGE;
 	
 	GetScrollInfo((HWND)lParam, SB_CTL, &si);
-	// Act on the scroll code.
+	// Act on the scroll code
 	switch (LOWORD(wParam))
 	{
 	case SB_LINEUP: // Also SB_LINELEFT
@@ -334,13 +368,13 @@ LRESULT VsScrollHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		si.nPos = HIWORD(wParam);
 		break;
 	}
-	// Check range.
+	// Check range
 	if (si.nPos < 0)
 		si.nPos = 0;
 	if (si.nPos > si.nMax - si.nPage + 1)
 		si.nPos = si.nMax - si.nPage + 1;
 	
-	// Update scroll bar position.
+	// Update scroll bar position
 	si.cbSize = sizeof(si);
 	
 	si.fMask = SIF_POS | SIF_PAGE | SIF_RANGE;
@@ -361,6 +395,7 @@ LRESULT PaintHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	GetScrollInfo ((HWND)hwndSB, SB_CTL, &si);
 	
 	GF_DrawTextAll(segments, &carrage, si.nPos);
+	UpdateScrollBarLimits(hwndSB);
 	return 0;
 }
 
@@ -369,7 +404,6 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 {
 	WNDCLASS wc;
     HWND hWnd;
-	HICON hIcon;
 	INITCOMMONCONTROLSEX icex;
 	RECT rect;
 	
@@ -382,7 +416,7 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     wc.cbWndExtra = 0;                        // Extra window data
     wc.hInstance = hInstance;                 // Owner handle
     wc.hIcon = NULL,                          // Application icon
-		wc.hCursor = 0;							  // Default cursor
+		wc.hCursor = 0;						  // Default cursor
     wc.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH);
     wc.lpszMenuName =  NULL;                  // Menu name
     wc.lpszClassName = TEXT("MyClass");       // Window class name
@@ -409,12 +443,16 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		NULL);              // Pointer to create parameters
     if (!IsWindow (hWnd)) return -2; 
 
-	hIcon=LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
-	int test = SendMessage(hWnd, WM_SETICON, FALSE, (LPARAM)hIcon);
-	
+	HICON hIcon=LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
+	if (hIcon)
+		SendMessage(hWnd, WM_SETICON, (WPARAM) (BOOL) ICON_BIG, (LPARAM)hIcon);
+		
+	HICON hIconSmall=(HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 16,16,0);
+	if (hIconSmall)
+		SendMessage(hWnd, WM_SETICON, (WPARAM) (BOOL) ICON_SMALL, (LPARAM)hIconSmall);
 	
 	GetClientRect (hWnd, &rect);
-
+	GF_SaveGlobalRect(rect);
 	hwndMW=hWnd;
 	
 	hwndSB = CreateWindowEx( 
@@ -449,17 +487,16 @@ int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	
     ShowWindow (hWnd, nCmdShow);
     UpdateWindow (hWnd);
-	Setup(hwndSB);
+	initialized=true;
+	HDC hdc = GetDC(hwndMW);
+	TO_CalcCarragePos(segments,&carrage,hdc, GF_GetRect());
+	ReleaseDC(hwndMW, hdc);
+	GF_SetCursorPos(segments,&carrage);
 	return 0;
 }
 
-void Setup(HWND hwndSB)
+void UpdateScrollBarLimits(HWND hwndSB)
 {	
-	int counterTotal=0;
-	for (int j=0; j<TO_GetSegmentCount(); j++)
-	{
-		counterTotal+=segments[j].linesCounter;
-	}
 	SCROLLINFO si;
 	
 	// Get scroll bar position.
@@ -473,7 +510,7 @@ void Setup(HWND hwndSB)
 	
 	si.nPage=GF_GetDrawedLines()->linesDrawed;
 
-	si.nMax=counterTotal-1;
+	si.nMax=TO_GetLinesTotal(segments)-1;
 	
 	si.fMask = SIF_POS | SIF_PAGE | SIF_RANGE;
 	

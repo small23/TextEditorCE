@@ -39,17 +39,17 @@ void FS_InitFonts(HWND hWnd)
 	HDC hdc;
 	hdc=GetDC(hWnd);
 
-	int rc = EnumFontFamilies(hdc, NULL, FS_FontsCallback, 0);
+	int rc = EnumFontFamilies(hdc, NULL, _FS_FontsCallback, 0);
 
 	for (int i=0; i< fontStashCounter; i++)
 	{
-		rc = EnumFontFamilies(hdc, fontStash[i].szFontFamily, FS_EnumSingleFontFamily, (LPARAM)&fontStash[i]);
+		rc = EnumFontFamilies(hdc, fontStash[i].szFontFamily, _FS_EnumSingleFontFamily, (LPARAM)&fontStash[i]);
 	}
 
 	ReleaseDC(hWnd,hdc);
 }
 
-int CALLBACK FS_FontsCallback(CONST LOGFONT *lplf, CONST TEXTMETRIC *lpntm, DWORD nFontType, LPARAM lParam)
+int CALLBACK _FS_FontsCallback(CONST LOGFONT *lplf, CONST TEXTMETRIC *lpntm, DWORD nFontType, LPARAM lParam)
 {
 	if (fontStash==NULL)
 	{
@@ -79,7 +79,7 @@ int CALLBACK FS_FontsCallback(CONST LOGFONT *lplf, CONST TEXTMETRIC *lpntm, DWOR
 	return 1;
 }
 
-int CALLBACK FS_EnumSingleFontFamily(CONST LOGFONT *lplf, CONST TEXTMETRIC *lpntm, DWORD nFontType, LPARAM lParam)
+int CALLBACK _FS_EnumSingleFontFamily(CONST LOGFONT *lplf, CONST TEXTMETRIC *lpntm, DWORD nFontType, LPARAM lParam)
 {
 	FSFONTFAMILY* fontData;
 	fontData = (FSFONTFAMILY*) lParam;

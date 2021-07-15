@@ -22,7 +22,7 @@ LRESULT PaintHandler(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam);
 
 
 
-void Setup(HWND lParam);
+void UpdateScrollBarLimits(HWND lParam);
 int GetFileName (HWND hWnd, LPTSTR szFileName, int nMax);
 int CreateCommandBand (HWND hWnd, BOOL fFirst);
 int InitInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -32,7 +32,7 @@ COMMANDBANDSRESTOREINFO cbr[NUMBANDS];
 INT nBandOrder[NUMBANDS];
 
 SEGMENT *segments;
-TOCURSORPOS carrage={0,0,0,0,16,0};
+TOCURSORPOS carrage={ 0, 0, 0, 0, 16, 0};
 
 
 HINSTANCE		hInst;

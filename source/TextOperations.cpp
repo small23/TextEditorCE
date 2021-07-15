@@ -17,6 +17,16 @@ int segmentsCount=0;
 int width=0;
 bool cursorUpDownRepeat = false;
 
+int TO_GetLinesTotal(SEGMENT* segments)
+{
+	int counter=0;
+	for (int i=0; i< segmentsCount; i++)
+	{
+		counter+=segments[i].linesCounter;
+	}
+
+	return counter;
+}
 
 int TO_GetSegmentCount(){return segmentsCount;};
 
@@ -34,12 +44,12 @@ void TO_GetTextSegments(SEGMENT* segments, HWND hWnd, RECT rect)
 	for(int i=0; i<sizeof(texts)/sizeof(wchar_t*); i++)
 	{
 		segments[i].text=(wchar_t*)malloc(512*sizeof(wchar_t));//texts[i];
-		segments[i].textArraySize=512;
+		segments[i].textSize=512;
 		segments[i].length=wcslen(texts[i]);
-		while(segments[i].length > segments[i].textArraySize)
+		while(segments[i].length > segments[i].textSize)
 		{
-			segments[i].text=(wchar_t*)realloc(segments[i].text, segments[i].textArraySize*sizeof(wchar_t)*2);
-			segments[i].textArraySize=segments[i].textArraySize*2;
+			segments[i].text=(wchar_t*)realloc(segments[i].text, segments[i].textSize*sizeof(wchar_t)*2);
+			segments[i].textSize=segments[i].textSize*2;
 		}
 		segments[i].spacesPointer=(int*)malloc(512*sizeof(int));
 		segments[i].linesCounter=0;
@@ -199,10 +209,10 @@ void TO_CalcCarragePos(SEGMENT* segments,TOCURSORPOS* carrage,HDC hdc, RECT rect
 
 void TO_InsertSymbol(SEGMENT* segments,TOCURSORPOS* carrage, wchar_t simbol, HDC hdc, RECT rect)
 {
-	if (segments[carrage->segment].length>=segments[carrage->segment].textArraySize)
+	if (segments[carrage->segment].length>=segments[carrage->segment].textSize)
 	{
-			segments[carrage->segment].text=(wchar_t*)realloc(segments[carrage->segment].text, segments[carrage->segment].textArraySize*sizeof(wchar_t)+512*sizeof(wchar_t));
-			segments[carrage->segment].textArraySize=segments[carrage->segment].textArraySize+512;
+			segments[carrage->segment].text=(wchar_t*)realloc(segments[carrage->segment].text, segments[carrage->segment].textSize*sizeof(wchar_t)+512*sizeof(wchar_t));
+			segments[carrage->segment].textSize=segments[carrage->segment].textSize+512;
 	}
 	memmove(&segments[carrage->segment].text[carrage->position+1],&segments[carrage->segment].text[carrage->position], (segments[carrage->segment].length-carrage->position)*sizeof(wchar_t));
 	segments[carrage->segment].text[carrage->position]=simbol;
@@ -298,17 +308,17 @@ void TO_Arrows(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect, WPARA
 		}
 		break; 
 	case VK_UP:
-		TO_ArrowUpDownPosCalc(segments, carrage, hdc, rect, -1);
+		_TO_ArrowUpDownPosCalc(segments, carrage, hdc, rect, -1);
 		break; 
 
 	case VK_DOWN:
-		TO_ArrowUpDownPosCalc(segments, carrage, hdc, rect, 1);
+		_TO_ArrowUpDownPosCalc(segments, carrage, hdc, rect, 1);
 		break; 
 	} 	
 	TO_CalcCarragePos(segments,carrage, hdc, rect);
 }
 
-void TO_ArrowUpDownPosCalc(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect, int counter)
+void _TO_ArrowUpDownPosCalc(SEGMENT* segments,TOCURSORPOS* carrage, HDC hdc, RECT rect, int counter)
 {
 	SIZE textMetrics;
 	int countFonts;

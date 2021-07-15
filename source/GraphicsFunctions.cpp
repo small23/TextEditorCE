@@ -16,7 +16,18 @@ GFDRAWEDLINES drawedLines = {0,0,0,0};
 int caretHeight=16;
 HWND hWnd=NULL;
 RECT rect;
+RECT rectGlobal;
 
+
+RECT GF_GetRectGlobal()
+{
+	return rectGlobal;
+}
+
+void GF_SaveGlobalRect(RECT rectangle)
+{
+	rectGlobal=rectangle;
+}
 
 RECT GF_GetRect()
 {
