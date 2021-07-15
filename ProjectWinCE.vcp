@@ -1,0 +1,723 @@
+# Microsoft eMbedded Visual Tools Project File - Name="ProjectWinCE" - Package Owner=<4>
+# Microsoft eMbedded Visual Tools Generated Build File, Format Version 6.02
+# ** DO NOT EDIT **
+
+# TARGTYPE "Win32 (WCE x86) Application" 0x8301
+# TARGTYPE "Win32 (WCE ARM) Application" 0x8501
+# TARGTYPE "Win32 (WCE x86em) Application" 0x7f01
+
+CFG=ProjectWinCE - Win32 (WCE ARM) Debug
+!MESSAGE This is not a valid makefile. To build this project using NMAKE,
+!MESSAGE use the Export Makefile command and run
+!MESSAGE 
+!MESSAGE NMAKE /f "ProjectWinCE.vcn".
+!MESSAGE 
+!MESSAGE You can specify a configuration when running NMAKE
+!MESSAGE by defining the macro CFG on the command line. For example:
+!MESSAGE 
+!MESSAGE NMAKE /f "ProjectWinCE.vcn" CFG="ProjectWinCE - Win32 (WCE ARM) Debug"
+!MESSAGE 
+!MESSAGE Possible choices for configuration are:
+!MESSAGE 
+!MESSAGE "ProjectWinCE - Win32 (WCE ARM) Release" (based on "Win32 (WCE ARM) Application")
+!MESSAGE "ProjectWinCE - Win32 (WCE ARM) Debug" (based on "Win32 (WCE ARM) Application")
+!MESSAGE "ProjectWinCE - Win32 (WCE x86) Release" (based on "Win32 (WCE x86) Application")
+!MESSAGE "ProjectWinCE - Win32 (WCE x86) Debug" (based on "Win32 (WCE x86) Application")
+!MESSAGE "ProjectWinCE - Win32 (WCE x86em) Release" (based on "Win32 (WCE x86em) Application")
+!MESSAGE "ProjectWinCE - Win32 (WCE x86em) Debug" (based on "Win32 (WCE x86em) Application")
+!MESSAGE 
+
+# Begin Project
+# PROP AllowPerConfigDependencies 0
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
+# PROP ATL_Project 2
+
+!IF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Release"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "ARMRel"
+# PROP BASE Intermediate_Dir "ARMRel"
+# PROP BASE CPU_ID "{D6518FFC-710F-11D3-99F2-00105A0DF099}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "ARMRel"
+# PROP Intermediate_Dir "ARMRel"
+# PROP CPU_ID "{D6518FFC-710F-11D3-99F2-00105A0DF099}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
+# ADD RSC /l 0x409 /i "headers/*" /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
+CPP=clarm.exe
+# ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /Yu"stdafx.h" /Oxs /M$(CECrtMT) /c
+# ADD CPP /nologo /W3 /O2 /Op /Ob2 /I "headers/" /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /Oxs /M$(CECrtMT) /c
+# SUBTRACT CPP /YX /Yc /Yu
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+# ADD LINK32 commctrl.lib coredll.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /out:"ARMRel/KWord.exe" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "ARMDbg"
+# PROP BASE Intermediate_Dir "ARMDbg"
+# PROP BASE CPU_ID "{D6518FFC-710F-11D3-99F2-00105A0DF099}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "ARMDbg"
+# PROP Intermediate_Dir "ARMDbg"
+# PROP CPU_ID "{D6518FFC-710F-11D3-99F2-00105A0DF099}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
+# ADD RSC /l 0x409 /i "headers/*" /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
+CPP=clarm.exe
+# ADD BASE CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /Yu"stdafx.h" /M$(CECrtMTDebug) /c
+# ADD CPP /nologo /W3 /Zi /Od /I "headers/" /D "DEBUG" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /FR /Zl /M$(CECrtMTDebug) /c
+# SUBTRACT CPP /YX /Yc /Yu
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+# ADD LINK32 commctrl.lib coredll.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Release"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "X86Rel"
+# PROP BASE Intermediate_Dir "X86Rel"
+# PROP BASE CPU_ID "{D6518FF3-710F-11D3-99F2-00105A0DF099}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "X86Rel"
+# PROP Intermediate_Dir "X86Rel"
+# PROP CPU_ID "{D6518FF3-710F-11D3-99F2-00105A0DF099}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
+# ADD RSC /l 0x409 /i "headers/*" /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
+CPP=cl.exe
+# ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /Yu"stdafx.h" /Gs8192 /GF /Oxs /c
+# ADD CPP /nologo /W3 /I "headers/" /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /Yu"stdafx.h" /Gs8192 /GF /Oxs /c
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "X86Dbg"
+# PROP BASE Intermediate_Dir "X86Dbg"
+# PROP BASE CPU_ID "{D6518FF3-710F-11D3-99F2-00105A0DF099}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "X86Dbg"
+# PROP Intermediate_Dir "X86Dbg"
+# PROP CPU_ID "{D6518FF3-710F-11D3-99F2-00105A0DF099}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
+# ADD RSC /l 0x409 /i "headers/*" /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
+CPP=cl.exe
+# ADD BASE CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /Yu"stdafx.h" /Gs8192 /GF /c
+# ADD CPP /nologo /W3 /Zi /Od /I "headers/" /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /Yu"stdafx.h" /Gs8192 /GF /c
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Release"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "X86EMRel"
+# PROP BASE Intermediate_Dir "X86EMRel"
+# PROP BASE CPU_ID "{D6518FF4-710F-11D3-99F2-00105A0DF099}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "X86EMRel"
+# PROP Intermediate_Dir "X86EMRel"
+# PROP CPU_ID "{D6518FF4-710F-11D3-99F2-00105A0DF099}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "i486" /r
+# ADD RSC /l 0x409 /i "headers/*" /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "i486" /r
+CPP=cl.exe
+# ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "WIN32" /D "STRICT" /D "_WIN32_WCE_EMULATION" /D "INTERNATIONAL" /D "USA" /D "INTLMSG_CODEPAGE" /D "$(CePlatform)" /D "i486" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /Yu"stdafx.h" /Gz /Oxs /c
+# ADD CPP /nologo /W3 /I "headers/" /D _WIN32_WCE=$(CEVersion) /D "WIN32" /D "STRICT" /D "_WIN32_WCE_EMULATION" /D "INTERNATIONAL" /D "USA" /D "INTLMSG_CODEPAGE" /D "$(CePlatform)" /D "i486" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /Gz /Oxs /c
+# SUBTRACT CPP /YX /Yc /Yu
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) /nologo /stack:0x10000,0x1000 /subsystem:windows /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /windowsce:emulation /MACHINE:IX86
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) /nologo /stack:0x10000,0x1000 /subsystem:windows /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /windowsce:emulation /MACHINE:IX86
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "X86EMDbg"
+# PROP BASE Intermediate_Dir "X86EMDbg"
+# PROP BASE CPU_ID "{D6518FF4-710F-11D3-99F2-00105A0DF099}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "X86EMDbg"
+# PROP Intermediate_Dir "X86EMDbg"
+# PROP CPU_ID "{D6518FF4-710F-11D3-99F2-00105A0DF099}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "i486" /r
+# ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "i486" /r
+CPP=cl.exe
+# ADD BASE CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "i486" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "WIN32" /D "STRICT" /D "_WIN32_WCE_EMULATION" /D "INTERNATIONAL" /D "USA" /D "INTLMSG_CODEPAGE" /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /Yu"stdafx.h" /Gz /c
+# ADD CPP /nologo /W3 /Zi /Od /I ".\headers" /I "headers/" /D "DEBUG" /D "i486" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "WIN32" /D "STRICT" /D "_WIN32_WCE_EMULATION" /D "INTERNATIONAL" /D "USA" /D "INTLMSG_CODEPAGE" /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /FR /Gz /c
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) /nologo /stack:0x10000,0x1000 /subsystem:windows /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /windowsce:emulation /MACHINE:IX86
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) /nologo /stack:0x10000,0x1000 /subsystem:windows /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /windowsce:emulation /MACHINE:IX86
+
+!ENDIF 
+
+# Begin Target
+
+# Name "ProjectWinCE - Win32 (WCE ARM) Release"
+# Name "ProjectWinCE - Win32 (WCE ARM) Debug"
+# Name "ProjectWinCE - Win32 (WCE x86) Release"
+# Name "ProjectWinCE - Win32 (WCE x86) Debug"
+# Name "ProjectWinCE - Win32 (WCE x86em) Release"
+# Name "ProjectWinCE - Win32 (WCE x86em) Debug"
+# Begin Group "Source Files"
+
+# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Source File
+
+SOURCE=.\source\DebugFunctions.cpp
+
+!IF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Release"
+
+DEP_CPP_DEBUG=\
+	".\headers\DebugFunctions.h"\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Debug"
+
+DEP_CPP_DEBUG=\
+	".\headers\DebugFunctions.h"\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Release"
+
+DEP_CPP_DEBUG=\
+	".\headers\DebugFunctions.h"\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Debug"
+
+DEP_CPP_DEBUG=\
+	".\headers\DebugFunctions.h"\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Release"
+
+DEP_CPP_DEBUG=\
+	".\headers\DebugFunctions.h"\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Debug"
+
+DEP_CPP_DEBUG=\
+	".\headers\DebugFunctions.h"\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\source\FontsStorage.cpp
+
+!IF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Release"
+
+DEP_CPP_FONTS=\
+	".\headers\FontsStorage.h"\
+	".\headers\StdAfx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Debug"
+
+DEP_CPP_FONTS=\
+	".\headers\FontsStorage.h"\
+	".\headers\StdAfx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Release"
+
+DEP_CPP_FONTS=\
+	".\headers\FontsStorage.h"\
+	".\headers\StdAfx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Debug"
+
+DEP_CPP_FONTS=\
+	".\headers\FontsStorage.h"\
+	".\headers\StdAfx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Release"
+
+DEP_CPP_FONTS=\
+	".\headers\FontsStorage.h"\
+	".\headers\StdAfx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Debug"
+
+DEP_CPP_FONTS=\
+	".\headers\FontsStorage.h"\
+	".\headers\StdAfx.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\source\GraphicsFunctions.cpp
+
+!IF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Release"
+
+DEP_CPP_GRAPH=\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Debug"
+
+DEP_CPP_GRAPH=\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Release"
+
+DEP_CPP_GRAPH=\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Debug"
+
+DEP_CPP_GRAPH=\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Release"
+
+DEP_CPP_GRAPH=\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Debug"
+
+DEP_CPP_GRAPH=\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\source\ProjectWinCE.cpp
+
+!IF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Release"
+
+DEP_CPP_PROJE=\
+	".\headers\DebugFunctions.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\ProjectWinCE.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+NODEP_CPP_PROJE=\
+	".\headers\textData.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Debug"
+
+DEP_CPP_PROJE=\
+	".\headers\DebugFunctions.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\ProjectWinCE.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+NODEP_CPP_PROJE=\
+	".\headers\textData.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Release"
+
+DEP_CPP_PROJE=\
+	".\headers\DebugFunctions.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\ProjectWinCE.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+NODEP_CPP_PROJE=\
+	".\headers\textData.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Debug"
+
+DEP_CPP_PROJE=\
+	".\headers\DebugFunctions.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\ProjectWinCE.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+NODEP_CPP_PROJE=\
+	".\headers\textData.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Release"
+
+DEP_CPP_PROJE=\
+	".\headers\DebugFunctions.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\ProjectWinCE.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+NODEP_CPP_PROJE=\
+	".\headers\textData.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Debug"
+
+DEP_CPP_PROJE=\
+	".\headers\DebugFunctions.h"\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\GraphicsFunctions.h"\
+	".\headers\ProjectWinCE.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\source\StdAfx.cpp
+
+!IF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Release"
+
+DEP_CPP_STDAF=\
+	".\headers\StdAfx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Debug"
+
+DEP_CPP_STDAF=\
+	".\headers\StdAfx.h"\
+	
+# ADD CPP /Yc
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Release"
+
+DEP_CPP_STDAF=\
+	".\headers\StdAfx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Debug"
+
+DEP_CPP_STDAF=\
+	".\headers\StdAfx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Release"
+
+DEP_CPP_STDAF=\
+	".\headers\StdAfx.h"\
+	
+# ADD CPP /Yu"stdafx.h"
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Debug"
+
+DEP_CPP_STDAF=\
+	".\headers\StdAfx.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\source\TextOperations.cpp
+
+!IF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Release"
+
+DEP_CPP_TEXTO=\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Debug"
+
+DEP_CPP_TEXTO=\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Release"
+
+DEP_CPP_TEXTO=\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Debug"
+
+DEP_CPP_TEXTO=\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Release"
+
+DEP_CPP_TEXTO=\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Debug"
+
+DEP_CPP_TEXTO=\
+	".\headers\FontsStorage.h"\
+	".\headers\GlobalDefinitions.h"\
+	".\headers\StdAfx.h"\
+	".\headers\TextOperations.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Group "Header Files"
+
+# PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\headers\DebugFunctions.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\headers\FontsStorage.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\headers\GlobalDefinitions.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\headers\GraphicsFunctions.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\newres.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\headers\ProjectWinCE.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\resource.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\headers\StdAfx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\headers\TextOperations.h
+# End Source File
+# End Group
+# Begin Group "Resource Files"
+
+# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=.\resources\CommandBandImg.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\resources\CommandBarImg.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\resources\FileView.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\resources\FileView16.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\resources\ico00001.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\resources\icon2.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\ProjectWinCE.rc
+
+!IF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Release"
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE ARM) Debug"
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Release"
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86) Debug"
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Release"
+
+!ELSEIF  "$(CFG)" == "ProjectWinCE - Win32 (WCE x86em) Debug"
+
+!ENDIF 
+
+# End Source File
+# End Group
+# End Target
+# End Project
